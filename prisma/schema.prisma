@@ -64,10 +64,9 @@ model MasterSampah {
   batas_atas       Decimal          @db.Decimal(15, 2)
   batas_bawah      Decimal          @db.Decimal(15, 2)
   is_active        Boolean          @default(true)
-
+  detail_setor     DetailSetor[]
   harga_lokal_unit HargaLokalUnit[]
   history_harga    HistoryHarga[]
-  detail_setor     DetailSetor[]
 
   @@index([kategori_utama])
   @@index([is_active])
@@ -110,9 +109,9 @@ model TransaksiSetor {
   total_rp        Decimal       @db.Decimal(15, 2)
   catatan_petugas String
   waktu           DateTime      @default(now())
+  detail_items    DetailSetor[]
   nasabah         User          @relation("SetorNasabah", fields: [nasabah_id], references: [id_user])
   petugas         User          @relation("SetorPetugas", fields: [petugas_id], references: [id_user])
-  detail_items    DetailSetor[]
 
   @@index([nasabah_id])
   @@index([petugas_id])
@@ -121,16 +120,16 @@ model TransaksiSetor {
 }
 
 model DetailSetor {
-  id                   Int         @id @default(autoincrement())
-  setor_id             String      @db.VarChar(30)
+  id                   Int            @id @default(autoincrement())
+  setor_id             String         @db.VarChar(30)
   barang_id            Int
-  nama_barang_snapshot String      @db.VarChar(100)
-  berat                Decimal     @db.Decimal(10, 2)
-  harga_deal           Decimal     @db.Decimal(15, 2)
-  total_rp             Decimal     @db.Decimal(15, 2)
+  nama_barang_snapshot String         @db.VarChar(100)
+  berat                Decimal        @db.Decimal(10, 2)
+  harga_deal           Decimal        @db.Decimal(15, 2)
+  total_rp             Decimal        @db.Decimal(15, 2)
   tipe_setoran         TipeSetoran
-  transaksi            TransaksiSetor @relation(fields: [setor_id], references: [id_setor])
   barang               MasterSampah   @relation(fields: [barang_id], references: [id_barang])
+  transaksi            TransaksiSetor @relation(fields: [setor_id], references: [id_setor])
 
   @@map("detail_setor")
 }
