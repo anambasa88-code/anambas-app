@@ -16,7 +16,7 @@ const JenisBadge = ({ jenis }) =>
   );
 
 const MetodeBadge = ({ metode }) => {
-  if (!metode) return <span className="text-[10px] text-slate-300">—</span>;
+  if (!metode) return <span className="text-[11px] font-bold text-slate-400">—</span>;
   return metode === "TABUNG" ? (
     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold bg-blue-50 text-blue-600 ring-1 ring-blue-100 dark:bg-blue-900/20 dark:text-blue-400">
       <Wallet className="w-3 h-3" /> Tabung

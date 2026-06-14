@@ -3,7 +3,13 @@
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
-import { RefreshCw, Filter, Package, FileSpreadsheet } from "lucide-react";
+import {
+  RefreshCw,
+  Filter,
+  Package,
+  FileSpreadsheet,
+  FileText,
+} from "lucide-react";
 
 // Import komponen yang sudah dipecah
 import ExportRiwayatTransaksi from "@/components/petugas/transaksi/ExportRiwayatTransaksi";
@@ -19,7 +25,7 @@ export default function TransaksiPage() {
   const [pagination, setPagination] = useState({ total: 0, limit: 20 });
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [unitName, setUnitName] = useState("BANK SAMPAH");
   const [filters, setFilters] = useState({
     tipe: "ALL",
     startDate: "",
@@ -91,12 +97,24 @@ export default function TransaksiPage() {
   const finalDisplayData = transaksi.map((item) => ({
     ...item,
     subItems: item.jenis === "SETOR" ? item.detail_items || [] : [],
-    totalGroupRp: item.jenis === "SETOR" ? Number(item.total_rp) : Number(item.jumlah_tarik),
+    totalGroupRp:
+      item.jenis === "SETOR"
+        ? Number(item.total_rp)
+        : Number(item.jumlah_tarik),
   }));
-
+  
   return (
-    <DashboardLayout>
-      <ExportRiwayatTransaksi ref={exportRef} data={transaksi} filters={filters} />
+    <DashboardLayout
+      onProfileLoaded={(profile) => {
+        setUnitName(profile.unitName);
+      }}
+    >
+      <ExportRiwayatTransaksi
+        ref={exportRef}
+        data={finalDisplayData}
+        filters={filters}
+        unitName={unitName}
+      />
 
       <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
         {/* Header Section */}
@@ -106,14 +124,18 @@ export default function TransaksiPage() {
               <Package className="w-8 h-8 text-green-600 dark:text-green-400" />
               Riwayat Transaksi
             </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Semua transaksi di unit Anda</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              Semua transaksi di unit Anda
+            </p>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowFilter(!showFilter)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                showFilter ? "bg-green-600 text-white" : "bg-green-50 text-green-600 border border-green-200"
+                showFilter
+                  ? "bg-green-600 text-white"
+                  : "bg-green-50 text-green-600 border border-green-200"
               }`}
             >
               <Filter className="w-4 h-4" />
@@ -127,11 +149,20 @@ export default function TransaksiPage() {
               <span className="hidden md:inline">Excel</span>
             </button>
             <button
+              onClick={() => exportRef.current.generatePDF()}
+              className="flex items-center gap-2 px-3 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-bold border border-red-200"
+            >
+              <FileText className="w-4 h-4" />
+              <span className="hidden md:inline">PDF</span>
+            </button>
+            <button
               onClick={() => fetchTransaksi()}
               disabled={loading}
               className="p-2.5 bg-green-50 text-green-600 rounded-lg disabled:opacity-50 border border-green-200"
             >
-              <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin" : ""}`} />
+              <RefreshCw
+                className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
+              />
             </button>
           </div>
         </div>

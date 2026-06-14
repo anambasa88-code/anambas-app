@@ -5,7 +5,8 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 
-const ExportDashboardPetugas = forwardRef(({ data, startDate, endDate, category }, ref) => {
+const ExportDashboardPetugas = forwardRef(({ data, startDate, endDate, category ,unitName }, ref) => {
+ 
 
   const formatIDR = (val) => {
     return new Intl.NumberFormat("id-ID", {
@@ -22,7 +23,7 @@ const ExportDashboardPetugas = forwardRef(({ data, startDate, endDate, category 
     generateExcel() {
       // 1. Siapkan Data Row demi Row
       const rows = [
-        ["LAPORAN OPERASIONAL BANK SAMPAH"],
+        [`LAPORAN OPERASIONAL ${unitName}`],
         [`Periode: ${startDate || "Semua"} s/d ${endDate || "Sekarang"}`],
         [`Kategori Filter: ${category || "Semua"}`],
         [],
@@ -80,7 +81,7 @@ const ExportDashboardPetugas = forwardRef(({ data, startDate, endDate, category 
       const doc = new jsPDF();
       doc.setFontSize(18);
       doc.setTextColor(22, 163, 74);
-      doc.text("LAPORAN OPERASIONAL BANK SAMPAH", 14, 20);
+      doc.text(`LAPORAN OPERASIONAL ${unitName}`, 14, 20);
       
       doc.setFontSize(10);
       doc.setTextColor(100);

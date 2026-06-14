@@ -3,7 +3,19 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
-import { History, ArrowUpRight, ArrowDownRight, Calendar, Package, DollarSign, RefreshCw, ChevronLeft, ChevronRight, Wallet, Banknote } from "lucide-react";
+import {
+  History,
+  ArrowUpRight,
+  ArrowDownRight,
+  Calendar,
+  Package,
+  DollarSign,
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+  Wallet,
+  Banknote,
+} from "lucide-react";
 
 export default function RiwayatNasabah() {
   const [loading, setLoading] = useState(true);
@@ -14,7 +26,7 @@ export default function RiwayatNasabah() {
     page: 1,
     limit: 20,
     total: 0,
-    totalPages: 0
+    totalPages: 0,
   });
   const [summary, setSummary] = useState({
     totalSetor: 0,
@@ -56,7 +68,7 @@ export default function RiwayatNasabah() {
 
       const riwayatJson = await riwayatRes.json();
       const dashboardJson = await dashboardRes.json();
-      
+
       setAllData(riwayatJson.data || []);
 
       // Pakai summary dari dashboard agar konsisten
@@ -130,25 +142,40 @@ export default function RiwayatNasabah() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
           {/* Total Setor dengan rincian kategori */}
           <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3">
-            <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Total Setor</p>
-            <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">{summary.totalSetor}x transaksi</p>
+            <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-2">
+              Total Setor
+            </p>
+            <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">
+              {summary.totalSetor}x transaksi
+            </p>
             <div className="space-y-1 text-[11px]">
               {(() => {
-                const kategoriList = ['PLASTIK', 'LOGAM', 'KERTAS', 'LAINNYA', 'CAMPURAN'];
+                const kategoriList = [
+                  "PLASTIK",
+                  "LOGAM",
+                  "KERTAS",
+                  "LAINNYA",
+                  "CAMPURAN",
+                ];
                 const kategoriLabels = {
-                  PLASTIK: 'Plastik',
-                  LOGAM: 'Logam',
-                  KERTAS: 'Kertas',
-                  LAINNYA: 'Lainnya',
-                  CAMPURAN: 'Campuran',
+                  PLASTIK: "Plastik",
+                  LOGAM: "Logam",
+                  KERTAS: "Kertas",
+                  LAINNYA: "Lainnya",
+                  CAMPURAN: "Campuran",
                 };
-                return kategoriList.map(kat => {
+                return kategoriList.map((kat) => {
                   const berat = summary.beratPerKategori?.[kat] || 0;
                   return (
-                    <div key={kat} className="flex justify-between items-center">
-                      <span className="text-slate-500">{kategoriLabels[kat]}</span>
+                    <div
+                      key={kat}
+                      className="flex justify-between items-center"
+                    >
+                      <span className="text-slate-500">
+                        {kategoriLabels[kat]}
+                      </span>
                       <span className="font-medium text-slate-700 dark:text-slate-300">
-                        {Number(berat).toLocaleString('id-ID')} kg
+                        {Number(berat).toLocaleString("id-ID")} kg
                       </span>
                     </div>
                   );
@@ -158,13 +185,21 @@ export default function RiwayatNasabah() {
           </div>
           {/* Total Tarik */}
           <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3">
-            <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Total Tarik</p>
-            <p className="text-sm font-bold text-slate-900 dark:text-white">{summary.totalTarik}x transaksi</p>
+            <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+              Total Tarik
+            </p>
+            <p className="text-sm font-bold text-slate-900 dark:text-white">
+              {summary.totalTarik}x transaksi
+            </p>
           </div>
           {/* Saldo */}
           <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-3 border border-emerald-100 dark:border-emerald-800">
-            <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider mb-1">Saldo Saat Ini</p>
-            <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400">{formatRupiah(summary.saldoAktif)}</p>
+            <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider mb-1">
+              Saldo Saat Ini
+            </p>
+            <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400">
+              {formatRupiah(summary.saldoAktif)}
+            </p>
           </div>
         </div>
 
@@ -176,9 +211,10 @@ export default function RiwayatNasabah() {
                 onClick={() => setFilter(type)}
                 className={`
                   px-4 py-2 rounded-lg text-sm font-medium transition-all
-                  ${filter === type
-                    ? "bg-green-600 text-white shadow-md"
-                    : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700"
+                  ${
+                    filter === type
+                      ? "bg-green-600 text-white shadow-md"
+                      : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700"
                   }
                 `}
               >
@@ -201,7 +237,9 @@ export default function RiwayatNasabah() {
           {loading ? (
             <div className="p-8 text-center">
               <RefreshCw className="w-8 h-8 animate-spin text-green-600 dark:text-green-400 mx-auto mb-3" />
-              <p className="text-gray-500 dark:text-gray-400">Memuat riwayat...</p>
+              <p className="text-gray-500 dark:text-gray-400">
+                Memuat riwayat...
+              </p>
             </div>
           ) : filteredData.length === 0 ? (
             <div className="p-8 text-center text-gray-500 dark:text-gray-400">
@@ -213,10 +251,18 @@ export default function RiwayatNasabah() {
               <table className="w-full">
                 <thead className="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">Tanggal</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">Jenis</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">Detail</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">Jumlah</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
+                      Tanggal
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
+                      Jenis
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
+                      Detail
+                    </th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
+                      Jumlah
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
@@ -258,13 +304,18 @@ export default function RiwayatNasabah() {
                                   </p>
                                   <div className="flex items-center gap-2 flex-wrap mt-0.5">
                                     <span className="text-xs text-gray-500 dark:text-gray-400">
-                                      {d.berat} kg × {formatRupiah(d.harga_deal)}/kg
+                                      {d.berat} kg ×{" "}
+                                      {formatRupiah(d.harga_deal)}/kg
                                     </span>
                                     {d.tipe_setoran && (
-                                      <span className={`text-xs px-2 py-0.5 rounded
-                                        ${d.tipe_setoran === "COMMUNITY"
-                                          ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                                          : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"}`}>
+                                      <span
+                                        className={`text-xs px-2 py-0.5 rounded
+                                        ${
+                                          d.tipe_setoran === "COMMUNITY"
+                                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                                            : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
+                                        }`}
+                                      >
                                         {d.tipe_setoran}
                                       </span>
                                     )}
@@ -276,23 +327,37 @@ export default function RiwayatNasabah() {
                             )}
                             {/* Metode bayar di bawah list item */}
                             {item.metode_bayar && (
-                              <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded font-medium
-                                ${item.metode_bayar === "TABUNG"
-                                  ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                                  : "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400"}`}>
+                              <span
+                                className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded font-medium
+                                ${
+                                  item.metode_bayar === "TABUNG"
+                                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                                    : "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400"
+                                }`}
+                              >
                                 {item.metode_bayar === "TABUNG" ? (
-                                  <><Wallet className="w-3 h-3" />TABUNG</>
+                                  <>
+                                    <Wallet className="w-3 h-3" />
+                                    TABUNG
+                                  </>
                                 ) : (
-                                  <><Banknote className="w-3 h-3" />JUAL LANGSUNG</>
+                                  <>
+                                    <Banknote className="w-3 h-3" />
+                                    JUAL LANGSUNG
+                                  </>
                                 )}
                               </span>
                             )}
                           </div>
                         ) : (
                           <div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">Penarikan saldo</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              Penarikan saldo
+                            </p>
                             {item.catatan_tarik && (
-                              <p className="text-xs text-gray-400 mt-0.5">{item.catatan_tarik}</p>
+                              <p className="text-xs text-gray-400 mt-0.5">
+                                {item.catatan_tarik}
+                              </p>
                             )}
                           </div>
                         )}
@@ -300,10 +365,16 @@ export default function RiwayatNasabah() {
 
                       {/* FIX: jumlah_tarik bukan jumlah */}
                       <td className="px-4 py-4 text-right">
-                        <p className={`text-base font-bold
-                          ${item.jenis === "SETOR"
-                            ? "text-green-600 dark:text-green-400"
-                            : "text-orange-600 dark:text-orange-400"}`}>
+                        <p
+                          className={`text-base font-bold
+                            ${
+                              item.jenis === "TARIK"
+                                ? "text-orange-600 dark:text-orange-400"
+                                : item.metode_bayar === "TABUNG"
+                                  ? "text-green-600 dark:text-green-400"
+                                  : "text-gray-500 dark:text-gray-400"
+                            }`}
+                        >
                           {item.jenis === "SETOR"
                             ? formatRupiah(item.total_rp || 0)
                             : formatRupiah(item.jumlah_tarik || 0)}

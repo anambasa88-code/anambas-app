@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import { Menu, Recycle } from "lucide-react";
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout({ children, onProfileLoaded }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [profile, setProfile] = useState({
     fullName: "",
     username: "",
-    role:     "",
+    role: "",
     unitName: "",
   });
 
@@ -18,7 +18,7 @@ export default function DashboardLayout({ children }) {
     setProfile((p) => ({
       ...p,
       username: localStorage.getItem("bs_username") || "",
-      role:     localStorage.getItem("bs_role")     || "",
+      role: localStorage.getItem("bs_role") || "",
     }));
 
     // Lalu fetch lengkap dari API
@@ -35,12 +35,20 @@ export default function DashboardLayout({ children }) {
 
         if (res.ok) {
           const data = await res.json();
-          setProfile({
-            fullName: data.nama_lengkap  || "",
-            username: data.nickname       || "",
-            role:     data.peran          || "",
+
+          const profileData = {
+            fullName: data.nama_lengkap || "",
+            username: data.nickname || "",
+            role: data.peran || "",
             unitName: data.unit?.nama_unit || "",
-          });
+          };
+
+          console.log("profileData =", profileData);
+          console.log("onProfileLoaded =", !!onProfileLoaded);
+
+          setProfile(profileData);
+
+          onProfileLoaded?.(profileData);
         }
       } catch (err) {
         console.error("Gagal fetch profile:", err);
@@ -52,7 +60,6 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-
       {/* Desktop Sidebar */}
       <div className="hidden md:block">
         <Sidebar isMobile={false} profile={profile} />
@@ -78,7 +85,6 @@ export default function DashboardLayout({ children }) {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
-
         {/* Mobile Header */}
         <div className="md:hidden sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4 py-3">
           <div className="flex items-center justify-between">
@@ -112,10 +118,7 @@ export default function DashboardLayout({ children }) {
           </div>
         </div>
 
-        <main className="flex-1 overflow-x-auto">
-          {children}
-        </main>
-
+        <main className="flex-1 overflow-x-auto">{children}</main>
       </div>
     </div>
   );
