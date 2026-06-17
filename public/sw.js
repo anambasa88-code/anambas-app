@@ -32,7 +32,7 @@ self.addEventListener('activate', (event) => {
   )
   self.clients.claim()
 })
-
+//test
 // Fetch — strategi NetworkFirst
 // Fetch — strategi NetworkFirst dengan filter offline.html yang aman
 self.addEventListener('fetch', (event) => {
