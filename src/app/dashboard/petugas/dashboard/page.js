@@ -82,20 +82,20 @@ export default function PetugasDashboard() {
     setTimeout(() => fetchDashboard(), 100);
   };
 
-const fetchDashboard = async () => {
+  const fetchDashboard = async () => {
     if (isDateInvalid) {
       toast.error("Tanggal selesai tidak boleh sebelum tanggal mulai!");
       return;
     }
     try {
       setLoading(true);
-      
+
       // JIKA OFFLINE: Ambil dari localStorage agar data tidak bernilai 0 [cite: 3, 4]
       if (typeof window !== "undefined" && !navigator.onLine) {
         const cachedDashboard = localStorage.getItem("cache_dashboard_petugas");
         if (cachedDashboard) {
           setData(JSON.parse(cachedDashboard));
-          toast.info("Menampilkan data dashboard offline terakhir.");
+          toast.info("Mode offline: Menampilkan data Terakhir.");
         } else {
           toast.error("Dashboard offline tidak memiliki data cache.");
         }
@@ -116,9 +116,11 @@ const fetchDashboard = async () => {
       });
       if (!res.ok) throw new Error("Gagal mengambil dashboard");
       const json = await res.json();
-      
-      const sampahList = Array.isArray(json?.sampah_terkumpul) ? json.sampah_terkumpul : [];
-      
+
+      const sampahList = Array.isArray(json?.sampah_terkumpul)
+        ? json.sampah_terkumpul
+        : [];
+
       const updatedData = {
         ...json,
         sampah_terkumpul: sampahList,
@@ -128,27 +130,34 @@ const fetchDashboard = async () => {
 
       // SIMPAN KE LOCALSTORAGE (Hanya jika mengambil data default / tanpa filter tanggal)
       if (!startDate && !endDate && typeof window !== "undefined") {
-        localStorage.setItem("cache_dashboard_petugas", JSON.stringify(updatedData));
+        localStorage.setItem(
+          "cache_dashboard_petugas",
+          JSON.stringify(updatedData),
+        );
       }
 
       // SIMPAN DATA HARGA SAMPAH KE INDEXEDDB DENGAN MAPPING KEY PATH YANG SESUAI [cite: 4, 5, 18]
-      if (sampahList.length > 0 && !startDate && !endDate && typeof window !== "undefined") {
-        const mappedSampahList = sampahList.map(item => ({
+      if (
+        sampahList.length > 0 &&
+        !startDate &&
+        !endDate &&
+        typeof window !== "undefined"
+      ) {
+        const mappedSampahList = sampahList.map((item) => ({
           ...item,
-          id_barang: item.id_barang || item.barang_id || item.id
+          id_barang: item.id_barang || item.barang_id || item.id,
         }));
-        
+
         await saveMasterData(STORE_HARGA, mappedSampahList);
       }
 
       if (startDate || endDate) toast.success("Data berhasil difilter");
     } catch (err) {
       console.error(err);
-      // Fallback jika API error / tiba- Buckingham putus koneksi di tengah jalan
       const cachedDashboard = localStorage.getItem("cache_dashboard_petugas");
       if (cachedDashboard) {
         setData(JSON.parse(cachedDashboard));
-        toast.info("Menampilkan data offline terakhir.");
+        toast.info("Mode offline: Menampilkan data Terakhir.");
       } else {
         toast.error("Gagal memuat dashboard");
       }

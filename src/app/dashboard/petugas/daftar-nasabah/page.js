@@ -40,7 +40,7 @@ export default function DaftarNasabahPage() {
         const cachedNasabah = await getMasterData(STORE_NASABAH);
         setNasabah(cachedNasabah || []);
         setPagination({ total: cachedNasabah?.length || 0, totalPages: 1, limit: 20 });
-        toast.info("Mode offline: Menampilkan data dari cache");
+        toast.info("Mode offline: Menampilkan data Terakhir");
         return;
       }
 
