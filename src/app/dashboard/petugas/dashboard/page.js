@@ -90,7 +90,7 @@ const fetchDashboard = async () => {
     try {
       setLoading(true);
       
-      // JIKA OFFLINE: Biarkan dashboard memuat data kosong/seadanya agar tidak crash[cite: 3, 4]
+      // JIKA OFFLINE: Biarkan dashboard memuat data seadanya agar tidak crash [cite: 3, 4]
       if (typeof window !== "undefined" && !navigator.onLine) {
         toast.info("Membuka dashboard dalam mode offline");
         setLoading(false);
@@ -118,9 +118,15 @@ const fetchDashboard = async () => {
         sampah_terkumpul: sampahList,
       });
 
-      // SIMPAN DATA HARGA SAMPAH KE INDEXEDDB[cite: 4, 5, 6]
+      // SIMPAN DATA HARGA SAMPAH KE INDEXEDDB DENGAN MAPPING KEY PATH YANG SESUAI [cite: 4, 5, 18]
       if (sampahList.length > 0 && !startDate && !endDate && typeof window !== "undefined") {
-        await saveMasterData(STORE_HARGA, sampahList);
+        // Mapping property agar IndexedDB mendeteksi id_barang sebagai keyPath [cite: 18]
+        const mappedSampahList = sampahList.map(item => ({
+          ...item,
+          id_barang: item.id_barang || item.barang_id || item.id
+        }));
+        
+        await saveMasterData(STORE_HARGA, mappedSampahList);
       }
 
       if (startDate || endDate) toast.success("Data berhasil difilter");

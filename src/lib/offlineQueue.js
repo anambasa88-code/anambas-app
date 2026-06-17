@@ -4,22 +4,28 @@ const DB_NAME = 'bank-sampah-offline-db';
 const STORE_NAME = 'setor-queue';
 const STORE_NASABAH = 'data-nasabah'; // Menyimpan data User (Peran: NASABAH)
 const STORE_HARGA = 'data-harga-lokal'; // Menyimpan data gabungan HargaLokalUnit & MasterSampah
-const DB_VERSION = 2; // Naik ke versi 2
+const DB_VERSION = 3; // Naik ke versi 3
 
 // Inisialisasi Database IndexedDB
 async function initDB() {
   return openDB(DB_NAME, DB_VERSION, {
     upgrade(db, oldVersion, newVersion, transaction) {
+      // 1. Store untuk antrean transaksi (Tetap)
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME, { keyPath: 'localId', autoIncrement: true });
       }
-      // Tambah store data master jika belum ada
-      if (!db.objectStoreNames.contains(STORE_NASABAH)) {
-        db.createObjectStore(STORE_NASABAH, { keyPath: 'id' });
+      
+      // 2. Store data nasabah (Dihapus dulu jika ada yang versi lama 'id', lalu buat baru dengan 'id_user')
+      if (db.objectStoreNames.contains(STORE_NASABAH)) {
+        db.deleteObjectStore(STORE_NASABAH);
       }
-      if (!db.objectStoreNames.contains(STORE_HARGA)) {
-        db.createObjectStore(STORE_HARGA, { keyPath: 'id' });
+      db.createObjectStore(STORE_NASABAH, { keyPath: 'id_user' });
+
+      // 3. Store data harga (Dihapus dulu jika ada yang versi lama 'id', lalu buat baru dengan 'id_barang')
+      if (db.objectStoreNames.contains(STORE_HARGA)) {
+        db.deleteObjectStore(STORE_HARGA);
       }
+      db.createObjectStore(STORE_HARGA, { keyPath: 'id_barang' });
     },
   });
 }
