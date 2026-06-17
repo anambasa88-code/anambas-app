@@ -8,6 +8,8 @@ import TambahNasabahModal from "@/components/petugas/nasabah/TambahNasabahModal"
 import EditNasabahModal from "@/components/petugas/nasabah/EditNasabahModal";
 import NasabahTable from "@/components/petugas/nasabah/NasabahTable";
 import { Users, Plus, RefreshCw, Search } from "lucide-react";
+import { saveMasterData, getMasterData, STORE_NASABAH } from "@/lib/offlineQueue";
+
 
 export default function DaftarNasabahPage() {
   const router = useRouter();
@@ -30,9 +32,19 @@ export default function DaftarNasabahPage() {
     return () => clearTimeout(timer);
   }, [page, search]);
 
-  const fetchNasabah = async () => {
+ const fetchNasabah = async () => {
     setLoading(true);
     try {
+      // JIKA OFFLINE: Ambil dari cache IndexedDB[cite: 3, 4]
+      if (typeof window !== "undefined" && !navigator.onLine) {
+        const cachedNasabah = await getMasterData(STORE_NASABAH);
+        setNasabah(cachedNasabah || []);
+        setPagination({ total: cachedNasabah?.length || 0, totalPages: 1, limit: 20 });
+        toast.info("Mode offline: Menampilkan data dari cache");
+        return;
+      }
+
+      // JIKA ONLINE: Ambil dari API dan simpan ke cache[cite: 4, 5]
       const token = localStorage.getItem("bs_token");
       const params = new URLSearchParams({
         page: page.toString(),
@@ -44,8 +56,15 @@ export default function DaftarNasabahPage() {
       });
       if (!res.ok) throw new Error("Gagal memuat data");
       const data = await res.json();
-      setNasabah(data.data || []);
+      
+      const currentData = data.data || [];
+      setNasabah(currentData);
       setPagination(data.pagination || { total: 0, totalPages: 1, limit: 20 });
+
+      // Simpan ke IndexedDB jika sedang tidak melakukan pencarian spesifik agar cache tetap bersih
+      if (!search && page === 1 && typeof window !== "undefined") {
+        await saveMasterData(STORE_NASABAH, currentData);
+      }
     } catch (err) {
       toast.error(err.message);
     } finally {

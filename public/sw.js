@@ -6,6 +6,9 @@ const STATIC_ASSETS = [
   '/manifest.json',
   '/web-app-manifest-192x192.png',
   '/web-app-manifest-512x512.png',
+  '/dashboard/petugas/dashboard',
+  '/dashboard/petugas/daftar-nasabah',
+  '/dashboard/nasabah/dashboard',
 ]
 
 // Install — cache aset statis

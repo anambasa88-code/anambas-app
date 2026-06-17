@@ -9,6 +9,7 @@ import StatsGrid from "@/components/petugas/dashboard/StatsGrid";
 import SampahTable from "@/components/petugas/dashboard/SampahTable";
 import TipeSetoranCards from "@/components/petugas/dashboard/TipeSetoranCards";
 import { FileSpreadsheet, FileText, RefreshCw } from "lucide-react";
+import { saveMasterData, STORE_HARGA } from "@/lib/offlineQueue";
 
 export default function PetugasDashboard() {
   const exportRef = useRef();
@@ -81,13 +82,21 @@ export default function PetugasDashboard() {
     setTimeout(() => fetchDashboard(), 100);
   };
 
-  const fetchDashboard = async () => {
+const fetchDashboard = async () => {
     if (isDateInvalid) {
       toast.error("Tanggal selesai tidak boleh sebelum tanggal mulai!");
       return;
     }
     try {
       setLoading(true);
+      
+      // JIKA OFFLINE: Biarkan dashboard memuat data kosong/seadanya agar tidak crash[cite: 3, 4]
+      if (typeof window !== "undefined" && !navigator.onLine) {
+        toast.info("Membuka dashboard dalam mode offline");
+        setLoading(false);
+        return;
+      }
+
       const token = localStorage.getItem("bs_token");
       let url = "/api/users/petugas/dashboard";
       const params = new URLSearchParams();
@@ -101,12 +110,19 @@ export default function PetugasDashboard() {
       });
       if (!res.ok) throw new Error("Gagal mengambil dashboard");
       const json = await res.json();
+      
+      const sampahList = Array.isArray(json?.sampah_terkumpul) ? json.sampah_terkumpul : [];
+      
       setData({
         ...json,
-        sampah_terkumpul: Array.isArray(json?.sampah_terkumpul)
-          ? json.sampah_terkumpul
-          : [],
+        sampah_terkumpul: sampahList,
       });
+
+      // SIMPAN DATA HARGA SAMPAH KE INDEXEDDB[cite: 4, 5, 6]
+      if (sampahList.length > 0 && !startDate && !endDate && typeof window !== "undefined") {
+        await saveMasterData(STORE_HARGA, sampahList);
+      }
+
       if (startDate || endDate) toast.success("Data berhasil difilter");
     } catch (err) {
       console.error(err);

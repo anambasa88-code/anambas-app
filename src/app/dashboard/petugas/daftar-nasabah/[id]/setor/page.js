@@ -10,6 +10,8 @@ import BarangRow from "@/components/petugas/setor/BarangRow";
 import ItemDetailSheet from "@/components/petugas/setor/ItemDetailSheet";
 import Cart from "@/components/petugas/setor/Cart";
 import { ArrowLeft, Search, ShoppingCart, User, PackageX } from "lucide-react";
+import { queueTransaction, getMasterData, STORE_NASABAH, STORE_HARGA} from "@/lib/offlineQueue";
+
 
 export default function InputSetorPage() {
   const { id } = useParams();
@@ -43,6 +45,22 @@ export default function InputSetorPage() {
   const fetchInitialData = async () => {
     try {
       setLoadingData(true);
+      
+      // JIKA OFFLINE: Ambil data dari IndexedDB 
+      if (typeof window !== "undefined" && !navigator.onLine) {
+        const cachedNasabahList = await getMasterData(STORE_NASABAH);
+        const cachedHargaList = await getMasterData(STORE_HARGA);
+        
+        // Cari nasabah yang spesifik sesuai ID di URL
+        const targetNasabah = cachedNasabahList.find(n => n.id_user === parseInt(id));
+        
+        setNasabah(targetNasabah || { nama_lengkap: "Nasabah (Offline Mode)" });
+        setBarangList(cachedHargaList || []);
+        toast.info("Menggunakan data cache offline");
+        return;
+      }
+
+      // JIKA ONLINE: Tetap fetch API normal seperti biasa
       const token = localStorage.getItem("bs_token");
       const [resN, resB] = await Promise.all([
         fetch(`/api/users/petugas/detail-nasabah/${id}`, {
@@ -127,30 +145,43 @@ export default function InputSetorPage() {
   };
 
   const submitSemuaSetoran = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/transaksi/setor", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("bs_token")}`,
-        },
-        body: JSON.stringify({
-          nasabah_id: parseInt(id),
-          items: cart,
-          metode_bayar: metodeBayar,
-          catatan_petugas: catatan,
-        }),
-      });
-      if (!res.ok) throw new Error("Gagal proses setoran");
-      toast.success("Setoran berhasil disimpan!");
+  try {
+    setLoading(true);
+
+    const payload = {
+      nasabah_id: parseInt(id),
+      items: cart,
+      metode_bayar: metodeBayar,
+      catatan_petugas: catatan,
+    };
+
+    // Deteksi jika HP Petugas sedang offline [cite: 3, 4]
+    if (typeof window !== "undefined" && !navigator.onLine) {
+      await queueTransaction(payload); // Simpan ke IndexedDB 
+      toast.success("Koneksi offline. Setoran disimpan di antrean lokal!"); 
       router.push(`/dashboard/petugas/detail-nasabah/${id}`);
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
+
+    // Kondisi Online (Normal)
+    const res = await fetch("/api/transaksi/setor", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("bs_token")}`,
+      },
+      body: JSON.stringify(payload),
+    });
+    
+    if (!res.ok) throw new Error("Gagal proses setoran");
+    toast.success("Setoran berhasil disimpan!");
+    router.push(`/dashboard/petugas/detail-nasabah/${id}`);
+  } catch (err) {
+    toast.error(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   // ── Derived ────────────────────────────────────────────────────────────────
 

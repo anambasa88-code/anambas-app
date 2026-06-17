@@ -8,7 +8,7 @@ export const buatToken = async (payload) => {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("9h")
+    .setExpirationTime("30d")
     .sign(SECRET);
 };
 
