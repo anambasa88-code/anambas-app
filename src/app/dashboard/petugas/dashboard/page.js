@@ -90,9 +90,15 @@ const fetchDashboard = async () => {
     try {
       setLoading(true);
       
-      // JIKA OFFLINE: Biarkan dashboard memuat data seadanya agar tidak crash [cite: 3, 4]
+      // JIKA OFFLINE: Ambil dari localStorage agar data tidak bernilai 0 [cite: 3, 4]
       if (typeof window !== "undefined" && !navigator.onLine) {
-        toast.info("Membuka dashboard dalam mode offline");
+        const cachedDashboard = localStorage.getItem("cache_dashboard_petugas");
+        if (cachedDashboard) {
+          setData(JSON.parse(cachedDashboard));
+          toast.info("Menampilkan data dashboard offline terakhir.");
+        } else {
+          toast.error("Dashboard offline tidak memiliki data cache.");
+        }
         setLoading(false);
         return;
       }
@@ -113,14 +119,20 @@ const fetchDashboard = async () => {
       
       const sampahList = Array.isArray(json?.sampah_terkumpul) ? json.sampah_terkumpul : [];
       
-      setData({
+      const updatedData = {
         ...json,
         sampah_terkumpul: sampahList,
-      });
+      };
+
+      setData(updatedData);
+
+      // SIMPAN KE LOCALSTORAGE (Hanya jika mengambil data default / tanpa filter tanggal)
+      if (!startDate && !endDate && typeof window !== "undefined") {
+        localStorage.setItem("cache_dashboard_petugas", JSON.stringify(updatedData));
+      }
 
       // SIMPAN DATA HARGA SAMPAH KE INDEXEDDB DENGAN MAPPING KEY PATH YANG SESUAI [cite: 4, 5, 18]
       if (sampahList.length > 0 && !startDate && !endDate && typeof window !== "undefined") {
-        // Mapping property agar IndexedDB mendeteksi id_barang sebagai keyPath [cite: 18]
         const mappedSampahList = sampahList.map(item => ({
           ...item,
           id_barang: item.id_barang || item.barang_id || item.id
@@ -132,7 +144,14 @@ const fetchDashboard = async () => {
       if (startDate || endDate) toast.success("Data berhasil difilter");
     } catch (err) {
       console.error(err);
-      toast.error("Gagal memuat dashboard");
+      // Fallback jika API error / tiba- Buckingham putus koneksi di tengah jalan
+      const cachedDashboard = localStorage.getItem("cache_dashboard_petugas");
+      if (cachedDashboard) {
+        setData(JSON.parse(cachedDashboard));
+        toast.info("Menampilkan data offline terakhir.");
+      } else {
+        toast.error("Gagal memuat dashboard");
+      }
     } finally {
       setLoading(false);
     }
