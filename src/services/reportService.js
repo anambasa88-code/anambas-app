@@ -1,5 +1,5 @@
 // src/services/reportService.js
-import prisma from "../lib/prisma";
+import prisma from "../lib/prisma"; // Pastikan default export tanpa kurung kurawal
 
 export const reportService = {
   async getNasabahHistory(nasabahId, type = "SEMUA", page = 1, limit = 20) {
@@ -35,17 +35,19 @@ export const reportService = {
           jenis: "SETOR",
           waktu: item.waktu,
           total_rp: Number(item.total_rp),
+          status: item.status,
+          alasan_batal: item.alasan_batal,
+          is_cancelled: item.is_cancelled,
           catatan_petugas: item.catatan_petugas,
           metode_bayar: item.metode_bayar,
           tipe_setoran: item.tipe_setoran,
           detail_items: item.detail_items.map((d) => ({
-            nama_barang_snapshot:
-              d.nama_barang_snapshot || d.barang?.nama_barang,
+            nama_barang_snapshot: d.nama_barang_snapshot || d.barang?.nama_barang,
             berat: Number(d.berat),
             harga_deal: Number(d.harga_deal),
             total_rp: Number(d.total_rp),
             tipe_setoran: d.tipe_setoran,
-            kategori_utama: d.barang?.kategori_utama || 'LAINNYA',
+            kategori_utama: d.barang?.kategori_utama || "LAINNYA",
           })),
         })),
       );
@@ -64,7 +66,6 @@ export const reportService = {
         where: { nasabah_id: id },
       });
 
-      // Transform data tarik
       history.push(
         ...penarikan.map((item) => ({
           id: item.id_tarik,

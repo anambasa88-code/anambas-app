@@ -1,34 +1,28 @@
-// src/app/api/users/nasabah/riwayat/route.js
-import { NextResponse } from 'next/server';
-import { reportService } from '@/services/reportService';
-import { getCurrentUser } from '@/lib/auth';
+import { NextResponse } from "next/server";
+import { getCurrentUser } from "@/lib/auth";
+import { reportService } from "@/services/reportService";
 
 export async function GET(request) {
   try {
-    // Get user dari token
-    const user = await getCurrentUser(request);
-    if (!user || user.peran !== 'NASABAH') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    const currentUser = await getCurrentUser(request);
+    if (!currentUser) {
+      return NextResponse.json({ error: "Silakan login terlebih dahulu" }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get('type') || 'SEMUA';
-    const page = parseInt(searchParams.get('page')) || 1;
-    const limit = parseInt(searchParams.get('limit')) || 20;
+    const type = searchParams.get("type") || "SEMUA";
+    const page = parseInt(searchParams.get("page")) || 1;
+    const limit = parseInt(searchParams.get("limit")) || 20;
 
     const result = await reportService.getNasabahHistory(
-      user.id_user, 
+      currentUser.id_user,
       type,
       page,
       limit
     );
 
-    return NextResponse.json({
-      message: `Riwayat ${type} berhasil diambil`,
-      ...result
-    }, { status: 200 });
-
+    return NextResponse.json(result, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

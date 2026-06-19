@@ -16,6 +16,7 @@ import ExportRiwayatTransaksi from "@/components/petugas/transaksi/ExportRiwayat
 import DetailTransaksiModal from "@/components/petugas/transaksi/DetailTransaksiModal";
 import TransaksiFilterPanel from "@/components/petugas/transaksi/TransaksiFilterPanel";
 import TransaksiTable from "@/components/petugas/transaksi/TransaksiTable";
+import CancelTransaksiModal from "@/components/petugas/transaksi/CancelTransaksiModal";
 
 export default function TransaksiPage() {
   const [transaksi, setTransaksi] = useState([]);
@@ -26,6 +27,8 @@ export default function TransaksiPage() {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [unitName, setUnitName] = useState("BANK SAMPAH");
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [transactionToCancel, setTransactionToCancel] = useState(null);
   const [filters, setFilters] = useState({
     tipe: "ALL",
     startDate: "",
@@ -61,6 +64,54 @@ export default function TransaksiPage() {
       setPagination({ total: data.total || 0, limit: data.limit || 20 });
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelTransaksi = (item) => {
+    setTransactionToCancel(item);
+    setIsCancelModalOpen(true);
+  };
+
+  const handleConfirmCancel = async (item, alasan) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("bs_token");
+      const endpoint =
+        item.jenis === "SETOR"
+          ? "/api/transaksi/cancel-setor"
+          : "/api/transaksi/cancel-tarik";
+
+      const payload =
+        item.jenis === "SETOR"
+          ? { id_setor: item.group_id || item.id_setor, alasan_batal: alasan } // Pastikan mengirim key 'id_setor' ke backend
+          : { id_tarik: item.id_tarik, alasan_batal: alasan };
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+      if (!res.ok)
+        throw new Error(result.error || "Gagal membatalkan transaksi");
+
+      toast.success("Transaksi berhasil dibatalkan!");
+      setIsCancelModalOpen(false); // Tutup modal jika sukses
+      setTransactionToCancel(null);
+      fetchTransaksi(); // Refresh isi tabel
+    }  catch (error) {
+      // Menyaring error Prisma agar lebih mudah dipahami oleh petugas
+      if (error.message.includes("prisma") || error.message.includes("invocation")) {
+        toast.error("Gagal memproses ke database. Format ID Transaksi tidak sesuai.");
+      } else {
+        toast.error(error.message || "Terjadi kesalahan pada server.");
+      }
     } finally {
       setLoading(false);
     }
@@ -102,7 +153,7 @@ export default function TransaksiPage() {
         ? Number(item.total_rp)
         : Number(item.jumlah_tarik),
   }));
-  
+
   return (
     <DashboardLayout
       onProfileLoaded={(profile) => {
@@ -178,6 +229,7 @@ export default function TransaksiPage() {
         )}
 
         {/* Table Section */}
+        {/* Table Section */}
         <TransaksiTable
           data={finalDisplayData}
           loading={loading}
@@ -188,6 +240,7 @@ export default function TransaksiPage() {
             setSelectedGroup(t);
             setIsModalOpen(true);
           }}
+          onCancelTransaksi={handleCancelTransaksi} // <-- Pastikan baris ini ada
           formatRupiah={formatRupiah}
           formatDate={formatDate}
         />
@@ -199,6 +252,17 @@ export default function TransaksiPage() {
         onClose={() => setIsModalOpen(false)}
         transaction={selectedGroup}
         formatRupiah={formatRupiah}
+      />
+
+      {/* Modal Cancel Transaksi */}
+      <CancelTransaksiModal
+        isOpen={isCancelModalOpen}
+        onClose={() => {
+          setIsCancelModalOpen(false);
+          setTransactionToCancel(null);
+        }}
+        onConfirm={handleConfirmCancel}
+        transaction={transactionToCancel}
       />
     </DashboardLayout>
   );

@@ -69,7 +69,7 @@ function ErrorState({ onBack }) {
 }
 
 export default function TarikNasabahPage() {
-  const { id } = useParams();
+ const { id } = useParams();
   const router = useRouter();
 
   const [loadingData, setLoadingData] = useState(true);
@@ -84,6 +84,7 @@ export default function TarikNasabahPage() {
   const [confirmData, setConfirmData] = useState(null);
   const [isOffline, setIsOffline] = useState(false);
 
+  // 1. Manajamen Event Online/Offline
   useEffect(() => {
     if (typeof window !== "undefined") {
       setIsOffline(!navigator.onLine);
@@ -100,7 +101,9 @@ export default function TarikNasabahPage() {
     }
   }, []);
 
+  // 2. Fungsi Fetch Data Nasabah
   const fetchNasabah = async () => {
+    if (!id) return; // Mencegah fetch jika parameter id dari URL belum ter-load oleh Next.js
     try {
       setLoadingData(true);
       const token = localStorage.getItem("bs_token");
@@ -121,6 +124,13 @@ export default function TarikNasabahPage() {
       setLoadingData(false);
     }
   };
+
+  // 3. Pemicu Fetch Data Saat ID Tersedia (Perbaikan Utama)
+  useEffect(() => {
+    if (id) {
+      fetchNasabah();
+    }
+  }, [id]);
 
   const handleJumlahChange = (e) => {
     const raw = e.target.value.replace(/[^0-9]/g, "");

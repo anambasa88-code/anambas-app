@@ -12,60 +12,28 @@ import {
   X,
   Recycle,
   Building2,
+  Scale,
 } from "lucide-react";
 
 const MENU_BY_ROLE = {
   NASABAH: [
-    {
-      icon: LayoutDashboard,
-      label: "Dashboard",
-      href: "/dashboard/nasabah/dashboard",
-    },
+    { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard/nasabah/dashboard", },
     { icon: History, label: "Riwayat", href: "/dashboard/nasabah/riwayat" },
+    { icon: Scale, label: "Koreksi Saldo", href: "/dashboard/nasabah/saldo-adjustments" },
   ],
+
   PETUGAS: [
-    {
-      icon: LayoutDashboard,
-      label: "Dashboard",
-      href: "/dashboard/petugas/dashboard",
-    },
-    {
-      icon: Users,
-      label: "Daftar Nasabah",
-      href: "/dashboard/petugas/daftar-nasabah",
-    },
-    {
-      icon: Wallet,
-      label: "Harga Lokal",
-      href: "/dashboard/petugas/harga-lokal",
-    },
-    {
-      icon: History,
-      label: "Riwayat Transaksi",
-      href: "/dashboard/petugas/transaksi",
-    },
+    { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard/petugas/dashboard", },
+    { icon: Users, label: "Daftar Nasabah", href: "/dashboard/petugas/daftar-nasabah", },
+    { icon: Wallet, label: "Harga Lokal", href: "/dashboard/petugas/harga-lokal", },
+    { icon: History, label: "Riwayat Transaksi", href: "/dashboard/petugas/transaksi", },
+    { icon: Scale, label: "Riwayat Koreksi Saldo", href: "/dashboard/petugas/saldo-adjustments", },
   ],
   ADMIN: [
-    {
-      icon: LayoutDashboard,
-      label: "Dashboard",
-      href: "/dashboard/admin/dashboard",
-    },
-    {
-      icon: Users,
-      label: "Daftar Petugas",
-      href: "/dashboard/admin/daftar-petugas",
-    },
-    {
-      icon: Recycle,
-      label: "Master Sampah",
-      href: "/dashboard/admin/master-sampah",
-    },
-    {
-      icon: Building2,
-      label: "Unit Bank Sampah",
-      href: "/dashboard/admin/unit-bank-sampah",
-    },
+    { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard/admin/dashboard", },
+    { icon: Users, label: "Daftar Petugas", href: "/dashboard/admin/daftar-petugas", },
+    { icon: Recycle, label: "Master Sampah", href: "/dashboard/admin/master-sampah", },
+    { icon: Building2, label: "Unit Bank Sampah", href: "/dashboard/admin/unit-bank-sampah", },
   ],
 };
 
@@ -92,7 +60,7 @@ export default function Sidebar({
           }, 300);
         },
       },
-      cancel: { label: "Batal", onClick: () => {} },
+      cancel: { label: "Batal", onClick: () => { } },
       duration: 5000,
     });
   };
@@ -175,11 +143,10 @@ export default function Sidebar({
               key={item.href}
               href={item.href}
               onClick={isMobile ? onClose : undefined}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-[13px] ${
-                isActive
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-[13px] ${isActive
                   ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-semibold"
                   : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium"
-              }`}
+                }`}
             >
               <Icon className="w-4 h-4 flex-shrink-0" />
               {item.label}

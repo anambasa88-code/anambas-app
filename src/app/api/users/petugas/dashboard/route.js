@@ -3,12 +3,12 @@ import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { analyticsService } from '@/services/analyticsService';
 
-// Force dynamic rendering for Vercel deployment
+// Memaksa Next.js untuk selalu mengambil data segar langsung dari server (Tanpa Cache)
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET(request) {
-  // 1. Cek Keamanan (Hanya Petugas)
+  // 1. Validasi Keamanan (Hanya user dengan peran PETUGAS yang diizinkan)
   const currentUser = await getCurrentUser(request);
 
   if (!currentUser || currentUser.peran !== 'PETUGAS') {
@@ -16,20 +16,20 @@ export async function GET(request) {
   }
 
   try {
-    // 2. Tangkap query params untuk filter tanggal
+    // 2. Tangkap query params tanggal dari URL jika frontend melakukan filtering
     const { searchParams } = new URL(request.url);
-    const filters = {
+    const options = {
       startDate: searchParams.get('startDate'),
       endDate: searchParams.get('endDate'),
     };
 
-    // 3. Eksekusi Analytics Service dengan Filter (PETUGAS UNIT)
-    const data = await analyticsService.getPetugasUnitSummary(currentUser.bank_sampah_id, filters);
+    // 3. Eksekusi Analytics Service dengan parameter options yang sudah diselaraskan
+    const data = await analyticsService.getPetugasUnitSummary(currentUser.bank_sampah_id, options);
     
-    // 4. Return Data Success
+    // 4. Kirim data hasil query ke frontend
     return NextResponse.json(data);
   } catch (error) {
-    // DEBUG LOG: Sangat penting agar error asli kelihatan di Server Logs
+    // Debugging log jika terjadi error di server console
     console.error('--- ERROR DASHBOARD PETUGAS ---');
     console.error('User:', currentUser?.nama);
     console.error('Unit ID:', currentUser?.bank_sampah_id);

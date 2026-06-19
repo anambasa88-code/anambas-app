@@ -10,8 +10,12 @@ import BarangRow from "@/components/petugas/setor/BarangRow";
 import ItemDetailSheet from "@/components/petugas/setor/ItemDetailSheet";
 import Cart from "@/components/petugas/setor/Cart";
 import { ArrowLeft, Search, ShoppingCart, User, PackageX } from "lucide-react";
-import { queueTransaction, getMasterData, STORE_NASABAH, STORE_HARGA} from "@/lib/offlineQueue";
-
+import {
+  queueTransaction,
+  getMasterData,
+  STORE_NASABAH,
+  STORE_HARGA,
+} from "@/lib/offlineQueue";
 
 export default function InputSetorPage() {
   const { id } = useParams();
@@ -45,15 +49,17 @@ export default function InputSetorPage() {
   const fetchInitialData = async () => {
     try {
       setLoadingData(true);
-      
-      // JIKA OFFLINE: Ambil data dari IndexedDB 
+
+      // JIKA OFFLINE: Ambil data dari IndexedDB
       if (typeof window !== "undefined" && !navigator.onLine) {
         const cachedNasabahList = await getMasterData(STORE_NASABAH);
         const cachedHargaList = await getMasterData(STORE_HARGA);
-        
+
         // Cari nasabah yang spesifik sesuai ID di URL
-        const targetNasabah = cachedNasabahList.find(n => n.id_user === parseInt(id));
-        
+        const targetNasabah = cachedNasabahList.find(
+          (n) => n.id_user === parseInt(id),
+        );
+
         setNasabah(targetNasabah || { nama_lengkap: "Nasabah (Offline Mode)" });
         setBarangList(cachedHargaList || []);
         toast.info("Menggunakan data cache offline");
@@ -97,7 +103,9 @@ export default function InputSetorPage() {
     if (!selectedBarang) return 0;
     if (tipe === "SISTEM") return Number(selectedBarang.harga_aktif);
     if (tipe === "LOKAL")
-      return selectedBarang.harga_lokal ? Number(selectedBarang.harga_lokal) : null;
+      return selectedBarang.harga_lokal
+        ? Number(selectedBarang.harga_lokal)
+        : null;
     return Number(tempItem.harga_manual) || 0;
   };
 
@@ -120,7 +128,7 @@ export default function InputSetorPage() {
         hargaDeal > selectedBarang.batas_atas
       ) {
         return toast.error(
-          `Harga Rp${hargaDeal.toLocaleString()} melampaui batas (Rp${selectedBarang.batas_bawah.toLocaleString()} - Rp${selectedBarang.batas_atas.toLocaleString()})`
+          `Harga Rp${hargaDeal.toLocaleString()} melampaui batas (Rp${selectedBarang.batas_bawah.toLocaleString()} - Rp${selectedBarang.batas_atas.toLocaleString()})`,
         );
       }
     }
@@ -145,43 +153,61 @@ export default function InputSetorPage() {
   };
 
   const submitSemuaSetoran = async () => {
-  try {
-    setLoading(true);
-
-    const payload = {
-      nasabah_id: parseInt(id),
-      items: cart,
-      metode_bayar: metodeBayar,
-      catatan_petugas: catatan,
-    };
-
-    // Deteksi jika HP Petugas sedang offline [cite: 3, 4]
-    if (typeof window !== "undefined" && !navigator.onLine) {
-      await queueTransaction(payload); // Simpan ke IndexedDB 
-      toast.success("Koneksi offline. Setoran disimpan di antrean lokal!"); 
-      router.push(`/dashboard/petugas/detail-nasabah/${id}`);
+    if (cart.length === 0) {
+      toast.error("Keranjang setoran kosong!");
       return;
     }
 
-    // Kondisi Online (Normal)
-    const res = await fetch("/api/transaksi/setor", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("bs_token")}`,
-      },
-      body: JSON.stringify(payload),
-    });
-    
-    if (!res.ok) throw new Error("Gagal proses setoran");
-    toast.success("Setoran berhasil disimpan!");
-    router.push(`/dashboard/petugas/detail-nasabah/${id}`);
-  } catch (err) {
-    toast.error(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("bs_token");
+
+      // Ambil tipe_setoran dari item pertama di keranjang sebagai acuan induk
+      const tipeSetoranUtama = cart[0]?.tipe_setoran || "COMMUNITY";
+
+      const payload = {
+        nasabah_id: Number(id),
+        metode_bayar: metodeBayar,
+        catatan_petugas: catatan.trim(),
+        tipe_setoran: cart[0]?.tipe_setoran || "COMMUNITY",
+
+        items: cart.map((item) => ({
+          barang_id: item.barang_id,
+          berat: Number(item.berat),
+          tipe_harga: item.tipe_harga,
+          harga_manual: Number(item.harga_manual) || 0,
+          tipe_setoran:
+            item.tipe_setoran || cart[0]?.tipe_setoran || "COMMUNITY",
+        })),
+      };
+
+      const res = await fetch("/api/transaksi/setor", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.error || "Gagal memproses transaksi setoran");
+      }
+
+      toast.success("Transaksi setoran berhasil disimpan!");
+      setCart([]);
+      setCatatan("");
+      router.push(`/dashboard/petugas/detail-nasabah/${id}`);
+    } catch (error) {
+      toast.error(error.message || "Terjadi kesalahan");
+      console.error("FULL ERROR:", error);
+    } finally {
+      setLoading(false);
+      setShowConfirmModal(false);
+    }
+  };
 
   // ── Derived ────────────────────────────────────────────────────────────────
 
@@ -193,7 +219,7 @@ export default function InputSetorPage() {
   const filteredBarang = barangList.filter(
     (b) =>
       (activeCategory === "SEMUA" || b.kategori_utama === activeCategory) &&
-      b.nama_barang.toLowerCase().includes(searchBarang.toLowerCase())
+      b.nama_barang.toLowerCase().includes(searchBarang.toLowerCase()),
   );
 
   const sharedCartProps = {
@@ -212,7 +238,6 @@ export default function InputSetorPage() {
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-slate-50 pb-24 lg:pb-6">
-
         {/* ── Header ── */}
         <div className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
           <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -258,10 +283,8 @@ export default function InputSetorPage() {
         {/* ── Main ── */}
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="lg:grid lg:grid-cols-12 lg:gap-5 lg:items-start">
-
             {/* ── Katalog ── */}
             <div className="lg:col-span-8 space-y-3">
-
               {/* Search */}
               <div className="relative">
                 <Search
@@ -285,7 +308,6 @@ export default function InputSetorPage() {
 
               {/* List Container */}
               <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-
                 {/* List Header */}
                 <div className="flex items-center justify-between px-4 py-2.5 bg-slate-50 border-b border-slate-100">
                   <span className="text-[10px] font-medium text-slate-600">
@@ -300,7 +322,10 @@ export default function InputSetorPage() {
                 <div className="divide-y divide-slate-50 overflow-y-auto max-h-[60vh]">
                   {loadingData ? (
                     [...Array(8)].map((_, i) => (
-                      <div key={i} className="flex items-center gap-3 px-4 py-3.5">
+                      <div
+                        key={i}
+                        className="flex items-center gap-3 px-4 py-3.5"
+                      >
                         <div className="w-1.5 h-1.5 rounded-full bg-slate-100 animate-pulse flex-shrink-0" />
                         <div className="flex-1 space-y-1.5">
                           <div className="h-3 w-36 bg-slate-100 rounded-full animate-pulse" />
