@@ -39,6 +39,8 @@ model User {
   is_active               Boolean          @default(true)
   created_at              DateTime         @default(now())
   created_by              Int?
+
+  //relation
   history_harga_perubah   HistoryHarga[]   @relation("EditorHarga")
   log_aktivitas           LogAktivitas[]
   transaksi_setor_nasabah TransaksiSetor[] @relation("SetorNasabah")
@@ -46,6 +48,8 @@ model User {
   transaksi_tarik_nasabah TransaksiTarik[] @relation("TarikNasabah")
   transaksi_tarik_petugas TransaksiTarik[] @relation("TarikPetugas")
   unit                    UnitBankSampah?  @relation(fields: [bank_sampah_id], references: [id_unit])
+  adjustments_diterima    SaldoAdjustment[] @relation("NasabahAdjustments")
+  adjustments_dibuat      SaldoAdjustment[] @relation("PetugasAdjustments")
 
   @@index([nickname])
   @@index([nik])
@@ -107,6 +111,8 @@ model TransaksiSetor {
   tipe_setoran    TipeSetoran
   metode_bayar    MetodeBayar   @default(TABUNG)
   total_rp        Decimal       @db.Decimal(15, 2)
+  is_cancelled    Boolean       @default(false)
+  alasan_batal    String        @default("")
   catatan_petugas String
   waktu           DateTime      @default(now())
   detail_items    DetailSetor[]
@@ -141,6 +147,7 @@ model TransaksiTarik {
   jumlah_tarik  Decimal     @db.Decimal(15, 2)
   status        StatusTarik
   catatan_tarik String?
+  alasan_batal  String      @default("")
   waktu         DateTime    @default(now())
   nasabah       User        @relation("TarikNasabah", fields: [nasabah_id], references: [id_user])
   petugas       User        @relation("TarikPetugas", fields: [petugas_id], references: [id_user])
@@ -163,6 +170,28 @@ model LogAktivitas {
   @@index([user_id])
   @@index([waktu])
   @@map("log_aktivitas")
+}
+
+model SaldoAdjustment {
+  id_adjustment   String   @id @default(uuid()) @db.VarChar(50)
+  nasabah_id      Int
+  petugas_id      Int
+  bank_sampah_id  Int
+  jenis_aksi      String   @db.VarChar(10) // "TAMBAH" | "KURANG"
+  nominal         Decimal  @db.Decimal(15, 2)
+  saldo_lama      Decimal  @db.Decimal(15, 2)
+  saldo_baru      Decimal  @db.Decimal(15, 2)
+  alasan_edit     String   @db.Text
+  waktu           DateTime @default(now())
+
+  // Relasi balik (Opsional tapi direkomendasikan agar query include-nya gampang)
+  nasabah         User     @relation("NasabahAdjustments", fields: [nasabah_id], references: [id_user])
+  petugas         User     @relation("PetugasAdjustments", fields: [petugas_id], references: [id_user])
+
+  @@index([nasabah_id])
+  @@index([petugas_id])
+  @@index([bank_sampah_id, waktu])
+  @@map("saldo_adjustment")
 }
 
 enum JenisKelamin {
@@ -193,6 +222,7 @@ enum StatusTarik {
   PENDING
   SUKSES
   DITOLAK
+  DIBATALKAN
 }
 
 enum MetodeBayar {

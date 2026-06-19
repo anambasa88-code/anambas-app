@@ -9,6 +9,7 @@ import StatsGrid from "@/components/petugas/dashboard/StatsGrid";
 import SampahTable from "@/components/petugas/dashboard/SampahTable";
 import TipeSetoranCards from "@/components/petugas/dashboard/TipeSetoranCards";
 import { FileSpreadsheet, FileText, RefreshCw } from "lucide-react";
+import { saveMasterData, STORE_HARGA } from "@/lib/offlineQueue";
 
 export default function PetugasDashboard() {
   const exportRef = useRef();
@@ -88,6 +89,20 @@ export default function PetugasDashboard() {
     }
     try {
       setLoading(true);
+
+      // JIKA OFFLINE: Ambil dari localStorage agar data tidak bernilai 0 [cite: 3, 4]
+      if (typeof window !== "undefined" && !navigator.onLine) {
+        const cachedDashboard = localStorage.getItem("cache_dashboard_petugas");
+        if (cachedDashboard) {
+          setData(JSON.parse(cachedDashboard));
+          toast.info("Mode offline: Menampilkan data Terakhir.");
+        } else {
+          toast.error("Dashboard offline tidak memiliki data cache.");
+        }
+        setLoading(false);
+        return;
+      }
+
       const token = localStorage.getItem("bs_token");
       let url = "/api/users/petugas/dashboard";
       const params = new URLSearchParams();
@@ -101,16 +116,51 @@ export default function PetugasDashboard() {
       });
       if (!res.ok) throw new Error("Gagal mengambil dashboard");
       const json = await res.json();
-      setData({
+
+      const sampahList = Array.isArray(json?.sampah_terkumpul)
+        ? json.sampah_terkumpul
+        : [];
+
+      const updatedData = {
         ...json,
-        sampah_terkumpul: Array.isArray(json?.sampah_terkumpul)
-          ? json.sampah_terkumpul
-          : [],
-      });
+        sampah_terkumpul: sampahList,
+      };
+
+      setData(updatedData);
+
+      // SIMPAN KE LOCALSTORAGE (Hanya jika mengambil data default / tanpa filter tanggal)
+      if (!startDate && !endDate && typeof window !== "undefined") {
+        localStorage.setItem(
+          "cache_dashboard_petugas",
+          JSON.stringify(updatedData),
+        );
+      }
+
+      // SIMPAN DATA HARGA SAMPAH KE INDEXEDDB DENGAN MAPPING KEY PATH YANG SESUAI [cite: 4, 5, 18]
+      if (
+        sampahList.length > 0 &&
+        !startDate &&
+        !endDate &&
+        typeof window !== "undefined"
+      ) {
+        const mappedSampahList = sampahList.map((item) => ({
+          ...item,
+          id_barang: item.id_barang || item.barang_id || item.id,
+        }));
+
+        await saveMasterData(STORE_HARGA, mappedSampahList);
+      }
+
       if (startDate || endDate) toast.success("Data berhasil difilter");
     } catch (err) {
       console.error(err);
-      toast.error("Gagal memuat dashboard");
+      const cachedDashboard = localStorage.getItem("cache_dashboard_petugas");
+      if (cachedDashboard) {
+        setData(JSON.parse(cachedDashboard));
+        toast.info("Mode offline: Menampilkan data Terakhir.");
+      } else {
+        toast.error("Gagal memuat dashboard");
+      }
     } finally {
       setLoading(false);
     }

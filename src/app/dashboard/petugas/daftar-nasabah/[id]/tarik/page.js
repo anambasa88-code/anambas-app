@@ -69,7 +69,7 @@ function ErrorState({ onBack }) {
 }
 
 export default function TarikNasabahPage() {
-  const { id } = useParams();
+ const { id } = useParams();
   const router = useRouter();
 
   const [loadingData, setLoadingData] = useState(true);
@@ -82,12 +82,28 @@ export default function TarikNasabahPage() {
   });
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmData, setConfirmData] = useState(null);
+  const [isOffline, setIsOffline] = useState(false);
 
+  // 1. Manajamen Event Online/Offline
   useEffect(() => {
-    if (id) fetchNasabah();
-  }, [id]);
+    if (typeof window !== "undefined") {
+      setIsOffline(!navigator.onLine);
 
+      const goOnline = () => setIsOffline(false);
+      const goOffline = () => setIsOffline(true);
+
+      window.addEventListener("online", goOnline);
+      window.addEventListener("offline", goOffline);
+      return () => {
+        window.removeEventListener("online", goOnline);
+        window.removeEventListener("offline", goOffline);
+      };
+    }
+  }, []);
+
+  // 2. Fungsi Fetch Data Nasabah
   const fetchNasabah = async () => {
+    if (!id) return; // Mencegah fetch jika parameter id dari URL belum ter-load oleh Next.js
     try {
       setLoadingData(true);
       const token = localStorage.getItem("bs_token");
@@ -108,6 +124,13 @@ export default function TarikNasabahPage() {
       setLoadingData(false);
     }
   };
+
+  // 3. Pemicu Fetch Data Saat ID Tersedia (Perbaikan Utama)
+  useEffect(() => {
+    if (id) {
+      fetchNasabah();
+    }
+  }, [id]);
 
   const handleJumlahChange = (e) => {
     const raw = e.target.value.replace(/[^0-9]/g, "");
@@ -184,6 +207,22 @@ export default function TarikNasabahPage() {
             <div className="w-16" /> {/* spacer */}
           </div>
 
+          {isOffline && (
+            <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-2xl p-4 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-[13px] font-bold text-red-800 dark:text-red-400">
+                  Fitur Tarik Saldo Wajib Online
+                </p>
+
+                <p className="text-[11px] text-red-600 dark:text-red-500 mt-0.5">
+                  Penarikan dana memerlukan validasi server langsung untuk
+                  mencegah selisih kas. Silakan cari sinyal terlebih dahulu.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* ── Card Nasabah ── */}
           <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
             {/* Green strip top */}
@@ -237,10 +276,11 @@ export default function TarikNasabahPage() {
               <span className="text-[22px] font-bold text-slate-400">Rp</span>
               <input
                 type="text"
+                disabled={isOffline}
                 value={displayJumlah}
                 onChange={handleJumlahChange}
                 placeholder="0"
-                className="flex-1 text-[32px] font-bold text-slate-900 dark:text-white bg-transparent outline-none placeholder:text-slate-200 w-full"
+                className="flex-1 text-[32px] font-bold text-slate-900 dark:text-white bg-transparent outline-none placeholder:text-slate-200 w-full disabled:opacity-40"
               />
             </div>
 
@@ -287,7 +327,7 @@ export default function TarikNasabahPage() {
               {[50000, 100000, 200000, 500000].map((nominal) => (
                 <button
                   key={nominal}
-                  disabled={nominal > nasabah.saldo}
+                  disabled={isOffline || nominal > nasabah.saldo}
                   onClick={() => {
                     setDisplayJumlah(formatNum(nominal));
                     setFormData((p) => ({ ...p, jumlah_tarik: nominal }));
@@ -364,7 +404,7 @@ export default function TarikNasabahPage() {
           {/* ── Submit ── */}
           <button
             onClick={handleSubmit}
-            disabled={loading || !isValid}
+            disabled={loading || !isValid || isOffline}
             className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-200 dark:disabled:bg-slate-800 text-white disabled:text-slate-400 font-semibold rounded-2xl transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2 text-[14px] shadow-lg shadow-emerald-600/25 disabled:shadow-none active:scale-[0.98]"
           >
             {loading ? (

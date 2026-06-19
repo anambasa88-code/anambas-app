@@ -125,8 +125,9 @@ export default function LoginPage() {
         toast.error("Token tidak ditemukan");
         return;
       }
-
-      document.cookie = `bs_token=${token}; path=/; max-age=${9 * 60 * 60}; SameSite=Lax`;
+      
+      //menyimpan cookie sampa 30 hari atau 1 bulan
+      document.cookie = `bs_token=${token}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
       localStorage.setItem("bs_token", token);
       localStorage.setItem("bs_role", user.peran);
       localStorage.setItem("bs_username", user.nickname);

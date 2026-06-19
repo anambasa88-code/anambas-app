@@ -430,7 +430,9 @@ export const userService = {
   async updateNasabah(id_user, data, actorRole, actorBankSampahId) {
     // Validasi: Petugas boleh edit nasabah di unit yang sama
     if (actorRole !== "PETUGAS" && actorRole !== "ADMIN") {
-      throw new Error("Hanya Petugas atau Admin yang dapat mengubah data nasabah.");
+      throw new Error(
+        "Hanya Petugas atau Admin yang dapat mengubah data nasabah.",
+      );
     }
 
     const { nama_lengkap, alamat, desa, nik, jenis_kelamin } = data;
@@ -448,8 +450,13 @@ export const userService = {
       throw new Error("User ini bukan nasabah.");
     }
 
-    if (actorRole === "PETUGAS" && existingNasabah.bank_sampah_id !== actorBankSampahId) {
-      throw new Error("Anda tidak dapat mengedit nasabah dari unit bank sampah lain.");
+    if (
+      actorRole === "PETUGAS" &&
+      existingNasabah.bank_sampah_id !== actorBankSampahId
+    ) {
+      throw new Error(
+        "Anda tidak dapat mengedit nasabah dari unit bank sampah lain.",
+      );
     }
 
     // 2. Cek duplikasi NIK (jika NIK diisi)
@@ -523,5 +530,76 @@ export const userService = {
     });
 
     return updated;
+  },
+
+  async updateSaldoManual(
+    id_nasabah,
+    id_petugas,
+    bank_sampah_id_petugas,
+    jenis_aksi, // "TAMBAH" | "KURANG"
+    nominal, // angka delta, bukan saldo final
+    alasan_edit,
+  ) {
+    // 1. Validasi Input
+    if (!alasan_edit || alasan_edit.trim() === "") {
+      throw new Error("Alasan perubahan saldo wajib diisi");
+    }
+
+    if (!nominal || nominal <= 0) {
+      throw new Error("Nominal harus lebih dari 0");
+    }
+
+    if (!["TAMBAH", "KURANG"].includes(jenis_aksi)) {
+      throw new Error("Jenis aksi tidak valid");
+    }
+
+    // 2. Semua logic di dalam transaction — eliminasi race condition
+    return await prisma.$transaction(async (tx) => {
+      // Fetch nasabah DI DALAM transaction dengan row-level lock
+      const nasabah = await tx.user.findUnique({
+        where: { id_user: id_nasabah },
+      });
+
+      if (!nasabah) {
+        throw new Error("Nasabah tidak ditemukan");
+      }
+
+      // Validasi unit kerja
+      if (nasabah.bank_sampah_id !== bank_sampah_id_petugas) {
+        throw new Error(
+          "Akses ditolak: Anda tidak bisa mengubah saldo nasabah dari Unit Bank Sampah lain",
+        );
+      }
+
+      const saldoLama = Number(nasabah.total_saldo);
+      const saldo_baru =
+        jenis_aksi === "TAMBAH" ? saldoLama + nominal : saldoLama - nominal;
+
+      if (saldo_baru < 0) {
+        throw new Error("Saldo tidak boleh menjadi minus");
+      }
+
+      // Update saldo nasabah
+      const nasabahUpdated = await tx.user.update({
+        where: { id_user: id_nasabah },
+        data: { total_saldo: saldo_baru },
+      });
+
+      // 🌟 PENCATATAN BARU: Simpan data ke tabel saldo_adjustment
+      await tx.saldoAdjustment.create({
+        data: {
+          nasabah_id: id_nasabah,
+          petugas_id: id_petugas,
+          bank_sampah_id: bank_sampah_id_petugas,
+          jenis_aksi: jenis_aksi,
+          nominal: nominal,
+          saldo_lama: saldoLama,
+          saldo_baru: saldo_baru,
+          alasan_edit: alasan_edit.trim(),
+        },
+      });
+
+      return nasabahUpdated;
+    });
   },
 };

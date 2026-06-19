@@ -23,7 +23,7 @@ const CATEGORIES = [
   { value: "LOGAM", label: "Logam", icon: Wrench },
   { value: "LAINNYA", label: "Lainnya", icon: Layers },
   { value: "CAMPURAN", label: "Campuran", icon: Package },
-   // ← tambah ini
+  // ← tambah ini
 ];
 
 const CATEGORY_COLORS = {
@@ -43,6 +43,22 @@ export default function HargaLokalPage() {
   const [activeTab, setActiveTab] = useState("SEMUA");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBarang, setSelectedBarang] = useState(null);
+  const [isOnline, setIsOnline] = useState(
+    typeof window !== "undefined" ? navigator.onLine : true,
+  );
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -250,9 +266,14 @@ export default function HargaLokalPage() {
                         <td className="px-5 py-3.5">
                           <div className="flex justify-center">
                             <button
+                              disabled={!isOnline} // ← Tambahkan ini
                               onClick={() => handleOpenModal(item)}
-                              className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all"
-                              title="Edit Harga"
+                              className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-slate-400" // ← Update class tailwind untuk efek disabled
+                              title={
+                                isOnline
+                                  ? "Edit Harga"
+                                  : "Offline - Fitur Terkunci"
+                              } // ← Ganti title dinamis
                             >
                               <Edit className="w-4 h-4" />
                             </button>

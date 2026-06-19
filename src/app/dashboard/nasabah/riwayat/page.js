@@ -3,19 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
-import {
-  History,
-  ArrowUpRight,
-  ArrowDownRight,
-  Calendar,
-  Package,
-  DollarSign,
-  RefreshCw,
-  ChevronLeft,
-  ChevronRight,
-  Wallet,
-  Banknote,
-} from "lucide-react";
+import { History, ArrowUpRight, ArrowDownRight, Calendar, Package, DollarSign, RefreshCw, ChevronLeft, ChevronRight, Wallet, Banknote, XCircle, Ban, } from "lucide-react";
 
 export default function RiwayatNasabah() {
   const [loading, setLoading] = useState(true);
@@ -36,56 +24,64 @@ export default function RiwayatNasabah() {
     beratPerKategori: {},
   });
 
-  const fetchRiwayat = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem("bs_token");
-      if (!token) {
-        toast.error("Token tidak ditemukan, silakan login ulang");
+ const fetchRiwayat = async (currentPage = 1, currentFilter = "SEMUA") => {
+  try {
+    setLoading(true);
+    const token = localStorage.getItem("bs_token");
+    if (!token) {
+      toast.error("Token tidak ditemukan, silakan login ulang");
+      window.location.href = "/login";
+      return;
+    }
+
+    // 🌟 SEKARANG LEBIH AMAN: Kirim filter dan page langsung ke API Server (Limit dikunci ke 20)
+    const [riwayatRes, dashboardRes] = await Promise.all([
+      fetch(`/api/users/nasabah/riwayat?type=${currentFilter}&page=${currentPage}&limit=20`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      fetch("/api/users/nasabah/dashboard", {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    ]);
+
+    if (!riwayatRes.ok || !dashboardRes.ok) {
+      if (riwayatRes.status === 401 || dashboardRes.status === 401) {
+        toast.error("Sesi berakhir, silakan login ulang");
+        localStorage.clear();
         window.location.href = "/login";
         return;
       }
-
-      // Fetch riwayat dan summary dashboard secara paralel
-      const [riwayatRes, dashboardRes] = await Promise.all([
-        fetch(`/api/users/nasabah/riwayat?type=SEMUA&page=1&limit=1000`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch("/api/users/nasabah/dashboard", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-      ]);
-
-      if (!riwayatRes.ok || !dashboardRes.ok) {
-        if (riwayatRes.status === 401 || dashboardRes.status === 401) {
-          toast.error("Sesi berakhir, silakan login ulang");
-          localStorage.clear();
-          window.location.href = "/login";
-          return;
-        }
-        throw new Error("Gagal mengambil data");
-      }
-
-      const riwayatJson = await riwayatRes.json();
-      const dashboardJson = await dashboardRes.json();
-
-      setAllData(riwayatJson.data || []);
-
-      // Pakai summary dari dashboard agar konsisten
-      setSummary({
-        totalSetor: dashboardJson.total_transaksi_setor || 0,
-        totalTarik: dashboardJson.total_transaksi_tarik || 0,
-        saldoAktif: dashboardJson.saldo_aktif || 0,
-        totalBeratSampah: dashboardJson.total_kg || 0,
-        beratPerKategori: dashboardJson.per_kategori || {},
-      });
-    } catch (err) {
-      console.error(err);
-      toast.error("Gagal memuat riwayat transaksi");
-    } finally {
-      setLoading(false);
+      throw new Error("Gagal mengambil data");
     }
-  };
+
+    const riwayatJson = await riwayatRes.json();
+    const dashboardJson = await dashboardRes.json();
+
+    // Simpan data halaman aktif saat ini dari server response
+    setAllData(riwayatJson.data || []);
+    
+    // 🌟 Sinkronkan state pagination local dengan data riil kalkulasi database
+    setPagination({
+      page: riwayatJson.pagination.page,
+      limit: riwayatJson.pagination.limit,
+      total: riwayatJson.pagination.total,
+      totalPages: riwayatJson.pagination.totalPages,
+    });
+
+    setSummary({
+      totalSetor: dashboardJson.total_transaksi_setor || 0,
+      totalTarik: dashboardJson.total_transaksi_tarik || 0,
+      saldoAktif: dashboardJson.saldo_aktif || 0,
+      totalBeratSampah: dashboardJson.total_kg || 0,
+      beratPerKategori: dashboardJson.per_kategori || {},
+    });
+  } catch (err) {
+    console.error(err);
+    toast.error("Gagal memuat riwayat transaksi");
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchRiwayat();
@@ -114,13 +110,11 @@ export default function RiwayatNasabah() {
     }).format(date);
   };
 
-  // Filter data untuk tabel
   const filteredData = allData.filter((d) => {
     if (filter === "SEMUA") return true;
     return d.jenis === filter;
   });
 
-  // Pagination untuk tabel
   const paginatedData = filteredData.slice((page - 1) * 20, page * 20);
   const totalPages = Math.ceil(filteredData.length / 20);
   const total = filteredData.length;
@@ -138,9 +132,7 @@ export default function RiwayatNasabah() {
           </p>
         </div>
 
-        {/* Stats Grid - tidak berubah saat filter */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
-          {/* Total Setor dengan rincian kategori */}
           <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3">
             <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-2">
               Total Setor
@@ -167,13 +159,8 @@ export default function RiwayatNasabah() {
                 return kategoriList.map((kat) => {
                   const berat = summary.beratPerKategori?.[kat] || 0;
                   return (
-                    <div
-                      key={kat}
-                      className="flex justify-between items-center"
-                    >
-                      <span className="text-slate-500">
-                        {kategoriLabels[kat]}
-                      </span>
+                    <div key={kat} className="flex justify-between items-center">
+                      <span className="text-slate-500">{kategoriLabels[kat]}</span>
                       <span className="font-medium text-slate-700 dark:text-slate-300">
                         {Number(berat).toLocaleString("id-ID")} kg
                       </span>
@@ -183,7 +170,6 @@ export default function RiwayatNasabah() {
               })()}
             </div>
           </div>
-          {/* Total Tarik */}
           <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3">
             <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
               Total Tarik
@@ -192,7 +178,6 @@ export default function RiwayatNasabah() {
               {summary.totalTarik}x transaksi
             </p>
           </div>
-          {/* Saldo */}
           <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-3 border border-emerald-100 dark:border-emerald-800">
             <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider mb-1">
               Saldo Saat Ini
@@ -209,14 +194,10 @@ export default function RiwayatNasabah() {
               <button
                 key={type}
                 onClick={() => setFilter(type)}
-                className={`
-                  px-4 py-2 rounded-lg text-sm font-medium transition-all
-                  ${
-                    filter === type
-                      ? "bg-green-600 text-white shadow-md"
-                      : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700"
-                  }
-                `}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${filter === type
+                    ? "bg-green-600 text-white shadow-md"
+                    : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700"
+                  }`}
               >
                 {type}
               </button>
@@ -237,9 +218,7 @@ export default function RiwayatNasabah() {
           {loading ? (
             <div className="p-8 text-center">
               <RefreshCw className="w-8 h-8 animate-spin text-green-600 dark:text-green-400 mx-auto mb-3" />
-              <p className="text-gray-500 dark:text-gray-400">
-                Memuat riwayat...
-              </p>
+              <p className="text-gray-500 dark:text-gray-400">Memuat riwayat...</p>
             </div>
           ) : filteredData.length === 0 ? (
             <div className="p-8 text-center text-gray-500 dark:text-gray-400">
@@ -266,122 +245,140 @@ export default function RiwayatNasabah() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
-                  {paginatedData.map((item, index) => (
-                    <tr
-                      key={`${item.jenis}-${item.id_setor || item.id}-${index}`}
-                      className="hover:bg-gray-50 dark:hover:bg-slate-800/50"
-                    >
-                      <td className="px-4 py-4">
-                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                          <Calendar className="w-4 h-4" />
-                          {formatDate(item.waktu)}
-                        </div>
-                      </td>
+                  {paginatedData.map((item, index) => {
+                    const isBatal = item.status === "DIBATALKAN" || !!item.alasan_batal;
 
-                      <td className="px-4 py-4">
-                        {item.jenis === "SETOR" ? (
-                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 w-fit">
-                            <ArrowUpRight className="w-4 h-4" />
-                            <span className="text-sm font-semibold">SETOR</span>
+                    return (
+                      <tr
+                        key={`${item.jenis}-${item.id_setor || item.id}-${index}`}
+                        className="hover:bg-gray-50 dark:hover:bg-slate-800/50"
+                      >
+                        <td className="px-4 py-4">
+                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                            <Calendar className="w-4 h-4" />
+                            {formatDate(item.waktu)}
                           </div>
-                        ) : (
-                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 w-fit">
-                            <ArrowDownRight className="w-4 h-4" />
-                            <span className="text-sm font-semibold">TARIK</span>
-                          </div>
-                        )}
-                      </td>
+                        </td>
 
-                      {/* FIX: Detail sekarang loop detail_items untuk SETOR */}
-                      <td className="px-4 py-4">
-                        {item.jenis === "SETOR" ? (
-                          <div className="space-y-2">
-                            {item.detail_items?.length > 0 ? (
-                              item.detail_items.map((d, i) => (
-                                <div key={i}>
-                                  <p className="text-sm font-semibold text-gray-800 dark:text-white">
-                                    {d.nama_barang_snapshot || "-"}
-                                  </p>
-                                  <div className="flex items-center gap-2 flex-wrap mt-0.5">
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                                      {d.berat} kg ×{" "}
-                                      {formatRupiah(d.harga_deal)}/kg
-                                    </span>
-                                    {d.tipe_setoran && (
-                                      <span
-                                        className={`text-xs px-2 py-0.5 rounded
-                                        ${
-                                          d.tipe_setoran === "COMMUNITY"
-                                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                                            : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
-                                        }`}
-                                      >
-                                        {d.tipe_setoran}
+                        <td className="px-4 py-4">
+                          {isBatal ? (
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 w-fit">
+                              <XCircle className="w-4 h-4" />
+                              <span className="text-sm font-semibold">DIBATALKAN</span>
+                            </div>
+                          ) : item.jenis === "SETOR" ? (
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 w-fit">
+                              <ArrowUpRight className="w-4 h-4" />
+                              <span className="text-sm font-semibold">SETOR</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 w-fit">
+                              <ArrowDownRight className="w-4 h-4" />
+                              <span className="text-sm font-semibold">TARIK</span>
+                            </div>
+                          )}
+                        </td>
+
+                        <td className="px-4 py-4">
+                          {item.jenis === "SETOR" ? (
+                            <div className="space-y-2">
+                              {item.detail_items?.length > 0 ? (
+                                item.detail_items.map((d, i) => (
+                                  <div key={i}>
+                                    <p className={`text-sm font-semibold ${isBatal ? "text-gray-400 line-through" : "text-gray-800 dark:text-white"}`}>
+                                      {d.nama_barang_snapshot || "-"}
+                                    </p>
+                                    <div className="flex items-center gap-2 flex-wrap mt-0.5">
+                                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                                        {d.berat} kg × {formatRupiah(d.harga_deal)}/kg
                                       </span>
-                                    )}
+                                      {d.tipe_setoran && (
+                                        <span
+                                          className={`text-xs px-2 py-0.5 rounded ${isBatal
+                                              ? "bg-gray-100 text-gray-400"
+                                              : d.tipe_setoran === "COMMUNITY"
+                                                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                                                : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
+                                            }`}
+                                        >
+                                          {d.tipe_setoran}
+                                        </span>
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
-                              ))
-                            ) : (
-                              <p className="text-sm text-gray-500">-</p>
-                            )}
-                            {/* Metode bayar di bawah list item */}
-                            {item.metode_bayar && (
-                              <span
-                                className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded font-medium
-                                ${
-                                  item.metode_bayar === "TABUNG"
-                                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                                    : "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400"
-                                }`}
-                              >
-                                {item.metode_bayar === "TABUNG" ? (
-                                  <>
-                                    <Wallet className="w-3 h-3" />
-                                    TABUNG
-                                  </>
-                                ) : (
-                                  <>
-                                    <Banknote className="w-3 h-3" />
-                                    JUAL LANGSUNG
-                                  </>
-                                )}
-                              </span>
-                            )}
-                          </div>
-                        ) : (
-                          <div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              Penarikan saldo
-                            </p>
-                            {item.catatan_tarik && (
-                              <p className="text-xs text-gray-400 mt-0.5">
-                                {item.catatan_tarik}
-                              </p>
-                            )}
-                          </div>
-                        )}
-                      </td>
+                                ))
+                              ) : (
+                                <p className="text-sm text-gray-500">-</p>
+                              )}
 
-                      {/* FIX: jumlah_tarik bukan jumlah */}
-                      <td className="px-4 py-4 text-right">
-                        <p
-                          className={`text-base font-bold
-                            ${
-                              item.jenis === "TARIK"
-                                ? "text-orange-600 dark:text-orange-400"
-                                : item.metode_bayar === "TABUNG"
-                                  ? "text-green-600 dark:text-green-400"
-                                  : "text-gray-500 dark:text-gray-400"
-                            }`}
-                        >
-                          {item.jenis === "SETOR"
-                            ? formatRupiah(item.total_rp || 0)
-                            : formatRupiah(item.jumlah_tarik || 0)}
-                        </p>
-                      </td>
-                    </tr>
-                  ))}
+                              {isBatal && item.alasan_batal && (
+                                <p className="text-xs font-medium text-red-500">
+                                  Alasan: {item.alasan_batal}
+                                </p>
+                              )}
+
+                              {item.metode_bayar && (
+                                <span
+                                  className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded font-medium ${isBatal
+                                      ? "bg-gray-100 text-gray-400"
+                                      : item.metode_bayar === "TABUNG"
+                                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                                        : "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400"
+                                    }`}
+                                >
+                                  {item.metode_bayar === "TABUNG" ? (
+                                    <>
+                                      <Wallet className="w-3 h-3" />
+                                      TABUNG
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Banknote className="w-3 h-3" />
+                                      JUAL LANGSUNG
+                                    </>
+                                  )}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <div>
+                              <p className={`text-sm ${isBatal ? "text-gray-400 line-through" : "text-gray-600 dark:text-gray-400"}`}>
+                                Penarikan saldo
+                              </p>
+                              {isBatal && item.alasan_batal ? (
+                                <p className="text-xs font-medium text-red-500 mt-0.5">
+                                  Alasan: {item.alasan_batal}
+                                </p>
+                              ) : (
+                                item.catatan_tarik && (
+                                  <p className="text-xs text-gray-400 mt-0.5">
+                                    {item.catatan_tarik}
+                                  </p>
+                                )
+                              )}
+                            </div>
+                          )}
+                        </td>
+
+                        <td className="px-4 py-4 text-right">
+                          <p
+                            className={`text-base font-bold ${isBatal
+                                ? "text-gray-400 line-through"
+                                : item.jenis === "TARIK"
+                                  ? "text-orange-600 dark:text-orange-400"
+                                  : item.metode_bayar === "TABUNG"
+                                    ? "text-green-600 dark:text-green-400"
+                                    : "text-gray-500 dark:text-gray-400"
+                              }`}
+                          >
+                            {item.jenis === "SETOR"
+                              ? formatRupiah(item.total_rp || 0)
+                              : formatRupiah(item.jumlah_tarik || 0)}
+                          </p>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
