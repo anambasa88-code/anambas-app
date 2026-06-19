@@ -15,6 +15,8 @@ const UNITS = [
   { id: 7, prefix: "LDK", nama: "LANDAK" },
   { id: 8, prefix: "PSN", nama: "PIASAN" },
   { id: 9, prefix: "BYT", nama: "BAYAT" },
+  { id: 13, prefix: "MTK", nama: "MATAK(BALING)" }, // ID wajib sesuaikan database
+  { id: 14, prefix: "JMJ", nama: "JEMAJA(BALING)" },
 ];
 
 const ROLES = [
