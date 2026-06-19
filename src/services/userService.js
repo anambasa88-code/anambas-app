@@ -12,6 +12,8 @@ const UNIT_PREFIXES = {
   7: "LDK",
   8: "PSN",
   9: "BYT",
+  13: "MTK", 
+  14: "JMJ",
 };
 
 const ROLE_CODES = {
@@ -161,11 +163,24 @@ export const userService = {
       const unitPrefix = UNIT_PREFIXES[bankSampahIdInt] || "USR";
       const roleCode = ROLE_CODES[peran] || "X";
 
-      const userCount = await prisma.user.count({
+    // Cari user terakhir di unit & peran yang sama berdasarkan id_user terbesar
+      const lastUser = await prisma.user.findFirst({
         where: { bank_sampah_id: bankSampahIdInt, peran: peran },
+        orderBy: { id_user: "desc" },
       });
 
-      const nextNumber = (userCount + 1).toString().padStart(4, "0");
+      let nextNumber = "0001";
+      if (lastUser && lastUser.nickname) {
+        // Ambil 4 digit terakhir dari nickname (misal dari 'MTK-N-0002' diambil '0002')
+        const lastSerialNumber = lastUser.nickname.split("-").pop();
+        const parsedNumber = parseInt(lastSerialNumber, 10);
+        
+        // Jika berhasil di-parse jadi angka, tambahkan 1
+        if (!isNaN(parsedNumber)) {
+          nextNumber = (parsedNumber + 1).toString().padStart(4, "0");
+        }
+      }
+
       const autoNickname = `${unitPrefix}-${roleCode}-${nextNumber}`;
 
       // Default PIN (Nasabah: 123456, Petugas: 654321)
@@ -246,11 +261,23 @@ export const userService = {
       const unitPrefix = UNIT_PREFIXES[bankSampahIdInt] || "USR";
       const roleCode = ROLE_CODES[peran] || "P";
 
-      const userCount = await prisma.user.count({
+     // Cari petugas terakhir di unit yang sama berdasarkan id_user terbesar
+      const lastPetugas = await prisma.user.findFirst({
         where: { bank_sampah_id: bankSampahIdInt, peran: peran },
+        orderBy: { id_user: "desc" },
       });
 
-      const nextNumber = (userCount + 1).toString().padStart(4, "0");
+      let nextNumber = "0001";
+      if (lastPetugas && lastPetugas.nickname) {
+        // Ambil 4 digit terakhir dari nickname (misal dari 'MTK-P-0001' diambil '0001')
+        const lastSerialNumber = lastPetugas.nickname.split("-").pop();
+        const parsedNumber = parseInt(lastSerialNumber, 10);
+        
+        if (!isNaN(parsedNumber)) {
+          nextNumber = (parsedNumber + 1).toString().padStart(4, "0");
+        }
+      }
+
       const autoNickname = `${unitPrefix}-${roleCode}-${nextNumber}`;
 
       // Default PIN Petugas: 654321
@@ -585,7 +612,6 @@ export const userService = {
         data: { total_saldo: saldo_baru },
       });
 
-      // 🌟 PENCATATAN BARU: Simpan data ke tabel saldo_adjustment
       await tx.saldoAdjustment.create({
         data: {
           nasabah_id: id_nasabah,
