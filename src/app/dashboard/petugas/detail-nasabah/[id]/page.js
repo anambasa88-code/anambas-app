@@ -7,28 +7,7 @@ import ExportDetailNasabah from "@/components/petugas/nasabah/ExportDetailNasaba
 import DashboardLayout from "@/components/DashboardLayout";
 import DetailTransaksiModal from "@/components/petugas/transaksi/DetailTransaksiModal";
 import EditNasabahModal from "@/components/petugas/nasabah/EditNasabahModal";
-import {
-  DollarSign,
-  RefreshCw,
-  ChevronLeft,
-  ChevronRight,
-  Wallet,
-  User,
-  MapPin,
-  FileSpreadsheet,
-  FileText,
-  ArrowLeft,
-  TrendingUp,
-  TrendingDown,
-  Inbox,
-  Loader2,
-  Plus,
-  MinusCircle,
-  Edit,
-  XCircle,
-  LockKeyhole,
-  Ban,
-} from "lucide-react";
+import { DollarSign, RefreshCw, ChevronLeft, ChevronRight, Wallet, User, MapPin, FileSpreadsheet, FileText, ArrowLeft, TrendingUp, TrendingDown, Inbox, Loader2, Plus, MinusCircle, AlertTriangle, XCircle, LockKeyhole, Ban, } from "lucide-react";
 import CancelTransaksiModal from "@/components/petugas/transaksi/CancelTransaksiModal";
 import EditSaldoModal from "@/components/petugas/transaksi/EditSaldoModal";
 
@@ -318,9 +297,14 @@ export default function DetailNasabahPage() {
               </button>
               <button
                 onClick={() => setShowEditSaldoModal(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-[13px] font-semibold transition-all shadow-lg shadow-blue-500/20 active:scale-[0.98]"
+                className="flex items-center gap-2 px-4 py-2.5
+             bg-red-600 hover:bg-red-700
+             text-white rounded-xl text-[13px] font-semibold
+             transition-all shadow-lg shadow-red-600/30
+             active:scale-[0.98]
+             border border-red-500"
               >
-                <Edit className="w-4 h-4" />
+                <AlertTriangle className="w-4 h-4" />
                 Edit Saldo
               </button>
             </div>
@@ -617,9 +601,14 @@ export default function DetailNasabahPage() {
                                         : "OCEAN"}
                                     </span>
                                   )}
-                                  {item.subItems.length > 1 && (
+                                  {item.detail_items?.length > 1 && (
                                     <button
-                                      onClick={() => openDetailModal(item)}
+                                      onClick={() =>
+                                        openDetailModal({
+                                          ...item,
+                                          subItems: item.detail_items || [],
+                                        })
+                                      }
                                       className="text-[9px] text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline font-medium"
                                     >
                                       Lihat detail
@@ -773,8 +762,6 @@ export default function DetailNasabahPage() {
         transaction={selectedTransaction}
         formatRupiah={formatRupiah}
       />
-
-  
 
       <EditSaldoModal
         isOpen={showEditSaldoModal}

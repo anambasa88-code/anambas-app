@@ -161,12 +161,19 @@ export default function TransaksiTable({
                             </span>
                           )}
                         </p>
+                        {/* Ganti tombol onClick rincian di TransaksiTable.js menjadi seperti ini */}
+                        {/* PASTI KAN DIUBAH SEPERTI INI DI TransaksiTable.js */}
                         <button
-                          onClick={() => onOpenModal(t)}
+                          onClick={() =>
+                            onOpenModal({
+                              ...t,
+                              subItems: t.detail_items || [], // Pastikan mengambil t.detail_items dari prisma, bukan t.subItems
+                            })
+                          }
                           className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 hover:text-emerald-700 mt-0.5 transition-colors"
                         >
-                          <Receipt className="w-3 h-3" /> {t.subItems.length}{" "}
-                          item rincian
+                          <Receipt className="w-3 h-3" />{" "}
+                          {t.detail_items?.length || 0} item rincian
                         </button>
                       </div>
                     ) : (
