@@ -1,23 +1,23 @@
 "use client";
-import { 
-  Building2, 
-  ChevronDown, 
-  ChevronUp, 
-  Trash2, 
-  Package, 
-  Waves, 
-  DollarSign, 
-  RefreshCw, 
+import {
+  Building2,
+  ChevronDown,
+  ChevronUp,
+  Trash2,
+  Package,
+  Waves,
+  DollarSign,
+  RefreshCw,
   Wallet,
   TrendingUp,
-  Users 
+  Users,
 } from "lucide-react";
 
-export default function UnitTable({ 
-  per_unit, 
-  expandedUnits, 
-  toggleUnit, 
-  formatRupiah 
+export default function UnitTable({
+  per_unit,
+  expandedUnits,
+  toggleUnit,
+  formatRupiah,
 }) {
   const CATEGORIES = [
     { name: "PLASTIK", icon: Package },
@@ -43,7 +43,7 @@ export default function UnitTable({
             </p>
           </div>
         </div>
-        
+
         <div className="p-8 text-center text-gray-500 dark:text-gray-400 border border-dashed border-gray-300 dark:border-slate-700 rounded-2xl">
           Belum ada unit terdaftar
         </div>
@@ -87,9 +87,8 @@ export default function UnitTable({
                     {unit.nama_unit}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {unit.total_nasabah} nasabah •{" "}
-                    {unit.total_kg.toFixed(2)} kg •{" "}
-                    {formatRupiah(unit.total_rp)}
+                    {unit.total_nasabah} nasabah • {unit.total_kg.toFixed(2)} kg
+                    • {formatRupiah(unit.total_rp)}
                   </p>
                 </div>
               </div>
@@ -152,28 +151,70 @@ export default function UnitTable({
                     </div>
                   </div>
 
+               
                   {/* Transaksi */}
                   <div className="p-4 rounded-lg border border-gray-200 dark:border-slate-700">
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
                       <TrendingUp className="w-4 h-4" />
                       Transaksi
                     </p>
-                    <div className="space-y-2 mb-4">
-                      <div className="flex justify-between text-xs">
-                        <span className="text-gray-600 dark:text-gray-400">Total</span>
-                        <span className="font-semibold text-gray-800 dark:text-white">
-                          {(unit.total_transaksi_setor + unit.total_transaksi_tarik).toLocaleString("id-ID")}
+                    <div className="space-y-2">
+                      {/* Total Transaksi */}
+                      <div className="flex justify-between text-xs font-semibold border-b border-gray-100 dark:border-slate-800 pb-1.5">
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Total Transaksi
+                        </span>
+                        <span className="text-gray-800 dark:text-white">
+                          {(
+                            unit.total_transaksi_setor +
+                            unit.total_transaksi_tarik
+                          ).toLocaleString("id-ID")}
                         </span>
                       </div>
-                      <div className="flex justify-between text-xs">
-                        <span className="text-gray-600 dark:text-gray-400">Setor</span>
-                        <span className="font-semibold text-green-600">
-                          {unit.total_transaksi_setor.toLocaleString("id-ID")}
-                        </span>
+
+                      {/* Kelompok Setor */}
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-xs font-medium">
+                          <span className="text-green-600 flex items-center gap-1">
+                            <Package className="w-3 h-3" /> Setoran
+                          </span>
+                          <span className="text-green-600 font-bold">
+                            {unit.total_transaksi_setor.toLocaleString("id-ID")}
+                          </span>
+                        </div>
+                        {/* Sub-item Metode Setor */}
+                        <div className="pl-4 space-y-1">
+                          <div className="flex justify-between text-[11px]">
+                            <span className="text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                              <Wallet className="w-2.5 h-2.5" /> Tabung
+                            </span>
+                            <span className="font-semibold text-gray-700 dark:text-gray-300">
+                              {(
+                                unit.transaksi_metode_bayar?.TABUNG || 0
+                              ).toLocaleString("id-ID")}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-[11px]">
+                            <span className="text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                              <DollarSign className="w-2.5 h-2.5" /> Jual
+                              Langsung
+                            </span>
+                            <span className="font-semibold text-gray-700 dark:text-gray-300">
+                              {(
+                                unit.transaksi_metode_bayar?.JUAL_LANGSUNG || 0
+                              ).toLocaleString("id-ID")}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex justify-between text-xs">
-                        <span className="text-gray-600 dark:text-gray-400">Tarik</span>
-                        <span className="font-semibold text-orange-600">
+
+                      {/* Kelompok Tarik */}
+                      <div className="flex justify-between text-xs font-medium pt-1 border-t border-gray-100 dark:border-slate-800">
+                        <span className="text-orange-600 flex items-center gap-1">
+                          <TrendingUp className="w-3 h-3 rotate-180" />{" "}
+                          Penarikan
+                        </span>
+                        <span className="text-orange-600 font-bold">
                           {unit.total_transaksi_tarik.toLocaleString("id-ID")}
                         </span>
                       </div>
@@ -188,7 +229,9 @@ export default function UnitTable({
                     </p>
                     <div className="space-y-3">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Total</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          Total
+                        </span>
                         <span className="font-semibold text-violet-600 dark:text-violet-400">
                           {formatRupiah(unit.total_rp)}
                         </span>
@@ -197,13 +240,18 @@ export default function UnitTable({
                         <div className="flex justify-between text-xs">
                           <span className="text-gray-500">Tabung</span>
                           <span className="font-medium text-gray-700 dark:text-gray-300">
-                            {formatRupiah(unit.perputaran_uang_per_metode?.TABUNG || 0)}
+                            {formatRupiah(
+                              unit.perputaran_uang_per_metode?.TABUNG || 0,
+                            )}
                           </span>
                         </div>
                         <div className="flex justify-between text-xs">
                           <span className="text-gray-500">Jual Langsung</span>
                           <span className="font-medium text-gray-700 dark:text-gray-300">
-                            {formatRupiah(unit.perputaran_uang_per_metode?.JUAL_LANGSUNG || 0)}
+                            {formatRupiah(
+                              unit.perputaran_uang_per_metode?.JUAL_LANGSUNG ||
+                                0,
+                            )}
                           </span>
                         </div>
                       </div>
@@ -225,7 +273,9 @@ export default function UnitTable({
                               Tabung
                             </span>
                             <span className="font-semibold text-green-600">
-                              {formatRupiah(unit.perputaran_uang_per_metode?.TABUNG || 0)}
+                              {formatRupiah(
+                                unit.perputaran_uang_per_metode?.TABUNG || 0,
+                              )}
                             </span>
                           </div>
                           <div className="flex justify-between items-center px-2 py-1 rounded-lg bg-orange-50 dark:bg-orange-900/20 text-xs">
@@ -234,13 +284,18 @@ export default function UnitTable({
                               Jual Langsung
                             </span>
                             <span className="font-semibold text-orange-600">
-                              {formatRupiah(unit.perputaran_uang_per_metode?.JUAL_LANGSUNG || 0)}
+                              {formatRupiah(
+                                unit.perputaran_uang_per_metode
+                                  ?.JUAL_LANGSUNG || 0,
+                              )}
                             </span>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 my-1">
                           <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700" />
-                          <span className="text-xs text-gray-500 whitespace-nowrap">Saldo Aktif</span>
+                          <span className="text-xs text-gray-500 whitespace-nowrap">
+                            Saldo Aktif
+                          </span>
                           <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700" />
                         </div>
                         <div className="flex justify-between items-center px-2 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-xs border border-emerald-300 dark:border-emerald-700">
