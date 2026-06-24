@@ -9,15 +9,15 @@ import UnitTable from "@/components/admin/dashboard/UnitTable";
 import FilterControls from "@/components/admin/dashboard/FilterControls";
 import ExportButtons from "@/components/admin/dashboard/ExportButtons";
 import GlobalSampahTable from "@/components/admin/dashboard/GlobalSampahTable";
-import { 
-  RefreshCw, 
-  Building2, 
-  TrendingUp, 
-  FileSpreadsheet, 
-  FileText, 
+import {
+  RefreshCw,
+  Building2,
+  TrendingUp,
+  FileSpreadsheet,
+  FileText,
   ArrowLeft,
   Search,
-  Categories
+  Categories,
 } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -32,7 +32,7 @@ export default function AdminDashboard() {
     endMonth: "",
   });
   const exportRef = useRef();
-  
+
   const [data, setData] = useState({
     global: {
       total_kg: 0,
@@ -53,10 +53,7 @@ export default function AdminDashboard() {
 
   const filteredGlobalSampah =
     data.global?.sampah_terkumpul?.filter((item) => {
-      return (
-        activeTab === "SEMUA" ||
-        item.kategori_utama === activeTab
-      );
+      return activeTab === "SEMUA" || item.kategori_utama === activeTab;
     }) || [];
 
   const fetchData = async () => {
@@ -73,13 +70,17 @@ export default function AdminDashboard() {
         if (filters.startDate) params.append("start_date", filters.startDate);
         if (filters.endDate) params.append("end_date", filters.endDate);
       } else {
-        if (filters.startMonth) params.append("start_month", filters.startMonth);
+        if (filters.startMonth)
+          params.append("start_month", filters.startMonth);
         if (filters.endMonth) params.append("end_month", filters.endMonth);
       }
 
-      const res = await fetch(`/api/users/admin/dashboard?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `/api/users/admin/dashboard?${params.toString()}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
       if (!res.ok) throw new Error("Gagal mengambil data");
       const json = await res.json();
@@ -101,7 +102,7 @@ export default function AdminDashboard() {
   };
 
   const toggleUnit = (unitId) => {
-    setExpandedUnits(prev => ({
+    setExpandedUnits((prev) => ({
       ...prev,
       [unitId]: !prev[unitId],
     }));
@@ -126,7 +127,10 @@ export default function AdminDashboard() {
             <div className="h-8 w-64 rounded-lg bg-gray-200 dark:bg-slate-800" />
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-32 rounded-lg bg-gray-200 dark:bg-slate-800" />
+                <div
+                  key={i}
+                  className="h-32 rounded-lg bg-gray-200 dark:bg-slate-800"
+                />
               ))}
             </div>
           </div>
@@ -155,7 +159,9 @@ export default function AdminDashboard() {
               disabled={loading}
               className="p-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50 transition-all dark:bg-gray-800 dark:text-gray-300"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+              <RefreshCw
+                className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+              />
             </button>
           </div>
         </div>
@@ -168,7 +174,7 @@ export default function AdminDashboard() {
         />
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
           <DashboardStatsCard
             type="nasabah"
             data={data}
@@ -193,6 +199,14 @@ export default function AdminDashboard() {
             global={global}
             formatRupiah={formatRupiah}
           />
+          <DashboardStatsCard
+            type="saldo"
+            global={global}
+            data={data}
+            formatRupiah={formatRupiah}
+          />
+         
+          
         </div>
 
         {/* Global Sampah Table */}
@@ -214,8 +228,8 @@ export default function AdminDashboard() {
               activeTab={activeTab}
             />
           </div>
-          
-          <GlobalSampahTable 
+
+          <GlobalSampahTable
             filteredGlobalSampah={filteredGlobalSampah}
             activeTab={activeTab}
             setActiveTab={setActiveTab}

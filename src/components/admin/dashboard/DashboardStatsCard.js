@@ -1,5 +1,5 @@
 "use client";
-import { Users, UsersRound, Package, TrendingUp, DollarSign, Wallet, Waves, ArrowUpRight, ArrowDownRight, Recycle, Wrench, FileText, Layers } from "lucide-react";
+import { Users, UsersRound, Package, TrendingUp, DollarSign, Wallet, Waves, ArrowUpRight, ArrowDownRight, Recycle, Wrench, FileText, Layers, Percent } from "lucide-react";
 
 const CATEGORY_ICONS = {
   PLASTIK: Recycle,
@@ -194,25 +194,68 @@ export default function DashboardStatsCard({
             </span>
             <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700" />
           </div>
-          <div className="flex justify-between items-center px-2 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-sm border border-emerald-300 dark:border-emerald-700">
-            <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-bold">
-              <Wallet className="w-3 h-3" />
-              Saldo Aktif Tersisa
-            </span>
-            <span className="font-bold text-emerald-700 dark:text-emerald-400">
-              {formatRupiah(global.saldo_aktif || 0)}
-            </span>
-          </div>
         </div>
       </div>
     </div>
   );
+
+  const renderSaldoCard = () => {
+    const uangMasukTabungan = global.perputaran_uang_per_metode?.TABUNG || 0;
+    const saldoAktif = global.saldo_aktif || 0;
+    const rasioSaldoAktif = uangMasukTabungan > 0 
+      ? ((saldoAktif / uangMasukTabungan) * 100).toFixed(1) 
+      : "0.0";
+
+    return (
+      <div className="p-6 rounded-2xl border border-gray-200 shadow-sm bg-white dark:bg-slate-900 dark:border-slate-700 hover:shadow-md transition-shadow flex flex-col justify-between">
+        <div>
+          <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mb-4">
+            <Wallet className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Saldo Aktif</p>
+          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+            {formatRupiah(saldoAktif)}
+          </p>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-slate-700 space-y-3">
+          {/* Rasio Mengendap */}
+          <div className="flex justify-between items-center text-sm">
+            <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400 text-xs">
+              <Percent className="w-3 h-3" /> Rasio Mengendap
+            </span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs">
+              {rasioSaldoAktif}%
+            </span>
+          </div>
+
+          {/* Progress Bar Mini */}
+          <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+            <div 
+              className="bg-emerald-500 h-1.5 rounded-full transition-all duration-500" 
+              style={{ width: `${Math.min(parseFloat(rasioSaldoAktif), 100)}%` }}
+            ></div>
+          </div>
+
+          {/* Info Pendukung Mini */}
+          <div className="pt-2 flex items-center justify-between border-t border-gray-100 dark:border-slate-800/60">
+            <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Total Penarikan</span>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/40 text-[11px] font-bold text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-900/30">
+              <ArrowDownRight className="w-3 h-3" />
+              {formatRupiah(global.total_penarikan_rp || 0)}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const cardRenderers = {
     nasabah: renderNasabahCard,
     sampah: renderSampahCard,
     transaksi: renderTransaksiCard,
     keuangan: renderKeuanganCard,
+    saldo: renderSaldoCard,
   };
 
   return cardRenderers[type]?.() || null;
