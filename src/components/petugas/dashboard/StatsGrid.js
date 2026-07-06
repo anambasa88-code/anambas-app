@@ -234,10 +234,10 @@ export default function StatsGrid({ data, formatRupiah }) {
         </div>
 
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-slate-700 space-y-3">
-          {/* Rasio Mengendap */}
+          {/* Rasio Saldo Tersimpan */}
           <div className="flex justify-between items-center text-xs">
             <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
-              <Percent className="w-3 h-3" /> Rasio Mengendap
+              <Percent className="w-3 h-3" /> Rasio Saldo Tersimpan
             </span>
             <span className="font-bold text-emerald-600 dark:text-emerald-400">
               {rasioSaldoAktif}%

@@ -222,7 +222,7 @@ export default function DashboardStatsCard({
           {/* Rasio Mengendap */}
           <div className="flex justify-between items-center text-sm">
             <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400 text-xs">
-              <Percent className="w-3 h-3" /> Rasio Mengendap
+              <Percent className="w-3 h-3" /> Rasio Saldo Tersimpan
             </span>
             <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs">
               {rasioSaldoAktif}%
