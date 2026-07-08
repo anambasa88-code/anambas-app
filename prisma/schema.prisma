@@ -3,6 +3,8 @@ generator client {
   output   = "../src/generated/prisma"
 }
 
+
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
@@ -229,3 +231,5 @@ enum MetodeBayar {
   TABUNG
   JUAL_LANGSUNG
 }
+
+

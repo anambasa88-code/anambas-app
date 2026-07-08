@@ -4,6 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Marquee from "react-fast-marquee";
+import CaraKerja from "@/components/CaraKerja";
+import ProsedurDetail from "@/components/ProsedurDetail";
+import KontakBankSampah from "@/components/KontakBankSampah"; 
 import { Recycle, Scale, Wallet, Instagram, CheckCircle } from "lucide-react";
 
 export default function LandingPage() {
@@ -124,48 +127,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ===== CARA KERJA ===== */}
-      <section id="cara-kerja" className="py-16 sm:py-20">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold text-slate-800">
-              Sangat Mudah, Hanya 3 Langkah
-            </h2>
-            <p className="mt-3 text-slate-600">
-              DWEP mempermudah Anda menabung sampah.
-            </p>
-          </div>
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 text-center">
-              <div className="bg-teal-100 h-20 w-20 mx-auto rounded-full flex items-center justify-center">
-                <Recycle className="h-12 w-12 text-teal-600" />
-              </div>
-              <h3 className="mt-6 text-xl font-bold">1. Pilah Sampah</h3>
-              <p className="mt-2 text-slate-500">
-                Pisahkan sampah sesuai kategori.
-              </p>
-            </div>
-            <div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-200 text-center transform md:scale-105">
-              <div className="bg-orange-100 h-20 w-20 mx-auto rounded-full flex items-center justify-center">
-                <Scale className="h-12 w-12 text-orange-600" />
-              </div>
-              <h3 className="mt-6 text-xl font-bold">2. Setor & Timbang</h3>
-              <p className="mt-2 text-slate-500">
-                Bawa sampah ke Bank Sampah terdekat.
-              </p>
-            </div>
-            <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 text-center">
-              <div className="bg-sky-100 h-20 w-20 mx-auto rounded-full flex items-center justify-center">
-                <Wallet className="h-12 w-12 text-sky-600" />
-              </div>
-              <h3 className="mt-6 text-xl font-bold">3. Dapatkan Saldo</h3>
-              <p className="mt-2 text-slate-500">
-                Otomatis menambah saldo tabungan digital Anda.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ===== CARA KERJA PREMIUM ===== */}
+     <CaraKerja />
 
       {/* ===== PREMIUM MARQUEE ===== */}
       <div className="w-full py-10 bg-slate-50">
@@ -202,6 +165,12 @@ export default function LandingPage() {
           </div>
         </Marquee>
       </div>
+
+      {/* ===== PROSEDUR DETAIL ===== */}
+      <ProsedurDetail />
+
+      {/* ===== KONTAK BANK SAMPAH ===== */}
+      <KontakBankSampah /> {/* 👈 TAMBAHKAN INI */}
 
       {/* ===== MANFAAT (Single Image) ===== */}
       <section id="manfaat" className="py-20 bg-slate-50">
