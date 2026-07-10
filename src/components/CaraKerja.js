@@ -50,7 +50,7 @@ export default function CaraKerja() {
       short: "Bawa sampah ke Bank Sampah terdekat.",
       description: "Setelah sampah terkumpul dan terpilah rapi, saatnya melakukan penyetoran.",
       details: [
-        { icon: Truck, text: "Datangi titik Bank Sampah atau agen DWEP pada jam operasional" },
+        { icon: Truck, text: "Datangi titik Bank Sampah  pada jam operasional" },
         { icon: CheckCircle2, text: "Petugas melakukan pemeriksaan cepat (sortir akhir)" },
         { icon: Scale, text: "Penimbangan transparan di hadapan Anda per kategori" },
         { icon: Shield, text: "Berat dihitung secara akurat dalam satuan Kilogram" }
