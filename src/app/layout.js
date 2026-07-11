@@ -4,7 +4,7 @@ import OfflineBanner from '@/components/OfflineBanner';
 import SyncInit from '@/components/SyncInit';
 
 export const metadata = {
-  title: "Bank Sampah Digital Anambas",
+  title: "Dashboard Bank Sampah Digital Anambas",
   description: "Sistem Manajemen Bank Sampah Digital Kepulauan Anambas",
   manifest: "/manifest.json",
   keywords: ["bank sampah", "anambas", "daur ulang", "sampah digital"],

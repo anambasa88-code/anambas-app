@@ -6,8 +6,8 @@ import Image from "next/image";
 import Marquee from "react-fast-marquee";
 import CaraKerja from "@/components/CaraKerja";
 import ProsedurDetail from "@/components/ProsedurDetail";
-import KontakBankSampah from "@/components/KontakBankSampah"; 
-import { Recycle, Scale, Wallet, Instagram, CheckCircle } from "lucide-react";
+import KontakBankSampah from "@/components/KontakBankSampah";
+import { Instagram, CheckCircle, ExternalLink } from "lucide-react";
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,8 +15,14 @@ export default function LandingPage() {
   return (
     <div className="bg-white text-slate-700">
       {/* ===== NAVBAR PREMIUM ===== */}
-      <header className="sticky top-0 z-50">
-        <div className="bg-white/60 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.06)] border-b border-white/40">
+      <header
+        className="sticky top-0 z-50 w-full"
+        style={{ marginTop: 0, marginBottom: 0 }}
+      >
+        <div
+          className="bg-white/60 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.06)] border-b border-white/40"
+          style={{ margin: 0, padding: 0 }}
+        >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
             {/* LOGO AREA */}
             <Link href="/" className="flex items-center gap-4 group">
@@ -25,17 +31,17 @@ export default function LandingPage() {
                 alt="Parongpong"
                 width={42}
                 height={42}
-                className="object-contain transition-all duration-300 group-hover:scale-110"
+                className="object-contain transition-all duration-300 group-hover:scale-110 flex-shrink-0"
               />
-              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-800">
-                Bank Sampah Anambas
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-800 whitespace-nowrap">
+                Dashboard Bank Sampah Anambas
               </h1>
               <Image
                 src="/logos/anambas.png"
                 alt="Anambas Foundation"
                 width={42}
                 height={42}
-                className="object-contain transition-all duration-300 group-hover:scale-110"
+                className="object-contain transition-all duration-300 group-hover:scale-110 flex-shrink-0"
               />
             </Link>
 
@@ -99,7 +105,6 @@ export default function LandingPage() {
           )}
         </div>
       </header>
-
       {/* ===== HERO SECTION ===== */}
       <section
         className="relative bg-cover bg-center h-[80vh]"
@@ -108,28 +113,70 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-black/40"></div>
         <div className="relative max-w-7xl mx-auto px-4 h-full flex flex-col justify-center text-center text-white">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight drop-shadow-lg">
-            Ubah Sampah Jadi Berkah
+            Dashboard Bank Sampah Anambas
           </h1>
           <p className="mt-4 text-lg sm:text-xl max-w-2xl mx-auto">
-            Program digital resmi Parongpong & Anambas Foundation untuk
-            menciptakan ekosistem bank sampah modern.
+            Kelola, pantau, dan tingkatkan pengelolaan sampah secara digital
+            untuk Anambas yang lebih bersih dan berkelanjutan.
           </p>
 
-          {/* TOMBOL LOGIN TRANSPARAN */}
-          <div className="mt-10">
+          {/* TOMBOL LOGIN & TENTANG YAYASAN */}
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/auth/login"
               className="inline-block px-12 py-5 text-xl sm:text-2xl font-black tracking-widest uppercase border-4 border-white bg-transparent hover:bg-white hover:text-slate-900 transition-all duration-300 rounded-2xl shadow-2xl"
             >
-               Login
+              Login
             </Link>
+
+            <a
+              href="https://anambasfoundation.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-5 text-lg sm:text-xl font-semibold border-2 border-white/60 bg-white/10 backdrop-blur-sm hover:bg-white hover:text-slate-900 transition-all duration-300 rounded-2xl shadow-xl"
+            >
+              Kenali Yayasan Kami
+              <ExternalLink className="w-5 h-5" />
+            </a>
+          </div>
+
+          {/* TAMBAHAN INFO KECIL */}
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm text-white/80">
+            <span className="flex items-center gap-2">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Dashboard Bank Sampah Digital
+            </span>
+            <span className="flex items-center gap-2">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Ramah Lingkungan
+            </span>
+            <span className="flex items-center gap-2">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Berkelanjutan
+            </span>
           </div>
         </div>
       </section>
-
       {/* ===== CARA KERJA PREMIUM ===== */}
-     <CaraKerja />
-
+      <CaraKerja />
       {/* ===== PREMIUM MARQUEE ===== */}
       <div className="w-full py-10 bg-slate-50">
         <Marquee speed={25} gradient={true}>
@@ -165,13 +212,10 @@ export default function LandingPage() {
           </div>
         </Marquee>
       </div>
-
       {/* ===== PROSEDUR DETAIL ===== */}
       <ProsedurDetail />
-
       {/* ===== KONTAK BANK SAMPAH ===== */}
       <KontakBankSampah /> {/* 👈 TAMBAHKAN INI */}
-
       {/* ===== MANFAAT (Single Image) ===== */}
       <section id="manfaat" className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -217,12 +261,13 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       {/* ===== FOOTER ===== */}
       <footer className="bg-slate-800 text-white pt-20 pb-12">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h1 className="text-xl font-extrabold mb-4">Bank Sampah Anambas</h1>
+            <h1 className="text-xl font-extrabold mb-4">
+              Dashboard Bank Sampah Anambas
+            </h1>
             <p className="text-slate-400 text-sm">
               Gerakan bersama untuk Anambas yang lebih bersih.
             </p>
@@ -249,13 +294,30 @@ export default function LandingPage() {
           </div>
           <div>
             <h4 className="font-bold text-lg mb-4">Kontak</h4>
-            <p className="text-slate-300 text-sm">Kuala Maras, Anambas</p>
+            <div className="space-y-2 text-slate-300 text-sm">
+              <p className="font-medium text-white">Alamat</p>
+              <p>Ruko Taman Duta Mas Blok T No. 10</p>
+              <p>Batam Centre, Batam, Indonesia 29163</p>
+              <p className="font-medium text-white mt-3">Email</p>
+              <a
+                href="mailto:connect@anambasfoundation.org"
+                className="hover:text-teal-400"
+              >
+                connect@anambasfoundation.org
+              </a>
+              <p className="font-medium text-white mt-3">Telepon</p>
+              <a href="tel:+628117047627" className="hover:text-teal-400">
+                +62 811-7047-627
+              </a>
+            </div>
           </div>
           <div>
             <h4 className="font-bold text-lg mb-4">Ikuti Kami</h4>
             <a
               href="https://www.instagram.com/anambasorg"
               className="text-slate-300 hover:text-white"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <Instagram className="w-6 h-6" />
             </a>
