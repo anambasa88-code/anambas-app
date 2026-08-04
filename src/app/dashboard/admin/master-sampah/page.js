@@ -198,7 +198,7 @@ export default function MasterSampahPage() {
                   { label: "Harga Pusat", align: "text-right" },
                   { label: "Batas Bawah", align: "text-right" },
                   { label: "Batas Atas", align: "text-right" },
-                  { label: "Status", align: "" },
+   
                   { label: "Aksi", align: "text-right" },
                 ].map((h, i) => (
                   <span key={i} className={`text-[11px] font-semibold text-slate-400 uppercase tracking-wider ${h.align}`}>
@@ -243,14 +243,7 @@ export default function MasterSampahPage() {
                         {formatRupiah(item.batas_atas)} / Kg
                       </span>
 
-                      <div>
-                        <span className={`inline-flex px-2 py-1 rounded-lg text-[10px] font-semibold ring-1 ${item.is_active
-                            ? "bg-emerald-50 text-emerald-600 ring-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:ring-emerald-800"
-                            : "bg-red-50 text-red-500 ring-red-100 dark:bg-red-900/20 dark:text-red-400 dark:ring-red-800"
-                          }`}>
-                          {item.is_active ? "Aktif" : "Non-aktif"}
-                        </span>
-                      </div>
+                   
 
                       <div className="flex justify-end">
                         <button
@@ -303,13 +296,7 @@ export default function MasterSampahPage() {
                         </span>
                       </div>
 
-                      {/* Status */}
-                      <span className={`inline-flex px-1.5 py-0.5 rounded text-[9px] font-semibold shrink-0 ${item.is_active
-                          ? "bg-emerald-50 text-emerald-600"
-                          : "bg-red-50 text-red-500"
-                        }`}>
-                        {item.is_active ? "Aktif" : "Nonaktif"}
-                      </span>
+               
 
                       {/* Edit Button */}
                       <button
