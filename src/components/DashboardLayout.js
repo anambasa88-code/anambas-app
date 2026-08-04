@@ -96,7 +96,7 @@ export default function DashboardLayout({ children, onProfileLoaded }) {
               <Menu className="w-5 h-5 text-slate-700 dark:text-slate-300" />
             </button>
 
-            {/* ✅ Nama unit dinamis */}
+            {/*  Nama unit dinamis */}
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-lg bg-emerald-600 flex items-center justify-center">
                 <Recycle className="w-3.5 h-3.5 text-white" />

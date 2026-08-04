@@ -106,16 +106,21 @@ export default function LandingPage() {
         </div>
       </header>
       {/* ===== HERO SECTION ===== */}
-      <section
+   <section
         className="relative bg-cover bg-center h-[80vh]"
         style={{ backgroundImage: `url('/anambas-bg4.jpg')` }}
       >
-        <div className="absolute inset-0 bg-black/40"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/70 via-slate-900/50 to-slate-900/80"></div>
         <div className="relative max-w-7xl mx-auto px-4 h-full flex flex-col justify-center text-center text-white">
+          <div className="inline-flex items-center gap-2 self-center px-4 py-1.5 rounded-full border border-teal-400/40 bg-teal-500/10 backdrop-blur-sm text-xs sm:text-sm font-semibold tracking-wide text-teal-300 mb-6">
+            KABUPATEN KEPULAUAN ANAMBAS
+          </div>
+
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight drop-shadow-lg">
-            Dashboard Bank Sampah Anambas
+            Dashboard Bank Sampah{" "}
+            <span className="text-teal-400">Anambas</span>
           </h1>
-          <p className="mt-4 text-lg sm:text-xl max-w-2xl mx-auto">
+          <p className="mt-4 text-lg sm:text-xl max-w-2xl mx-auto text-slate-200">
             Kelola, pantau, dan tingkatkan pengelolaan sampah secara digital
             untuk Anambas yang lebih bersih dan berkelanjutan.
           </p>
@@ -124,7 +129,7 @@ export default function LandingPage() {
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/auth/login"
-              className="inline-block px-12 py-5 text-xl sm:text-2xl font-black tracking-widest uppercase border-4 border-white bg-transparent hover:bg-white hover:text-slate-900 transition-all duration-300 rounded-2xl shadow-2xl"
+              className="inline-block px-10 py-4 text-base sm:text-lg font-semibold bg-teal-600 hover:bg-teal-500 text-white transition-colors duration-300 rounded-xl shadow-lg shadow-teal-900/40"
             >
               Login
             </Link>
@@ -133,48 +138,73 @@ export default function LandingPage() {
               href="https://anambasfoundation.org/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-5 text-lg sm:text-xl font-semibold border-2 border-white/60 bg-white/10 backdrop-blur-sm hover:bg-white hover:text-slate-900 transition-all duration-300 rounded-2xl shadow-xl"
+              className="inline-flex items-center gap-2 px-8 py-4 text-base sm:text-lg font-medium border border-white/30 text-white hover:bg-white/10 transition-colors duration-300 rounded-xl"
             >
               Kenali Yayasan Kami
-              <ExternalLink className="w-5 h-5" />
+              <ExternalLink className="w-4 h-4" />
             </a>
           </div>
 
           {/* TAMBAHAN INFO KECIL */}
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm text-white/80">
-            <span className="flex items-center gap-2">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Dashboard Bank Sampah Digital
-            </span>
-            <span className="flex items-center gap-2">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Ramah Lingkungan
-            </span>
-            <span className="flex items-center gap-2">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Berkelanjutan
-            </span>
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-slate-300">
+            {[
+              "Dashboard Bank Sampah Digital",
+              "Ramah Lingkungan",
+              "Berkelanjutan",
+            ].map((label) => (
+              <span key={label} className="flex items-center gap-2">
+                <svg
+                  className="w-4 h-4 text-teal-400 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                {label}
+              </span>
+            ))}
           </div>
         </div>
       </section>
+        {/* ===== PREMIUM MARQUEE ===== */}
+      <div className="w-full py-10 bg-slate-50">
+        <Marquee speed={25} gradient={true}>
+          <div className="flex items-center gap-32">
+            <Image
+              src="/logos/parongpong.png"
+              alt="Parongpong"
+              width={180}
+              height={180}
+              className="grayscale opacity-80"
+            />
+            <Image
+              src="/logos/anambas.png"
+              alt="Anambas Foundation"
+              width={180}
+              height={180}
+              className="grayscale opacity-80"
+            />
+            <Image
+              src="/logos/parongpong.png"
+              alt="Parongpong"
+              width={180}
+              height={180}
+              className="grayscale opacity-80"
+            />
+            <Image
+              src="/logos/anambas.png"
+              alt="Anambas Foundation"
+              width={180}
+              height={180}
+              className="grayscale opacity-80"
+            />
+          </div>
+        </Marquee>
+      </div>
       {/* ===== CARA KERJA PREMIUM ===== */}
       <CaraKerja />
       {/* ===== PREMIUM MARQUEE ===== */}
@@ -215,7 +245,7 @@ export default function LandingPage() {
       {/* ===== PROSEDUR DETAIL ===== */}
       <ProsedurDetail />
       {/* ===== KONTAK BANK SAMPAH ===== */}
-      <KontakBankSampah /> {/* 👈 TAMBAHKAN INI */}
+      <KontakBankSampah /> 
       {/* ===== MANFAAT (Single Image) ===== */}
       <section id="manfaat" className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
