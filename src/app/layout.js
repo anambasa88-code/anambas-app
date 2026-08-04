@@ -33,7 +33,7 @@ export const metadata = {
 
   // Verifikasi Google Search Console
   verification: {
-    google: "google894fc779a7a40309",
+    google: "TmSdosAibn6d3KjkB0Vq9vkjY1IOOnYHGMyZWLTVyY4",
   },
 
   // Menentukan URL resmi website
