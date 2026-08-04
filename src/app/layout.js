@@ -4,23 +4,57 @@ import OfflineBanner from '@/components/OfflineBanner';
 import SyncInit from '@/components/SyncInit';
 
 export const metadata = {
-  title: "Dashboard Bank Sampah Digital Anambas",
-  description: "Sistem Manajemen Bank Sampah Digital Kepulauan Anambas",
+  // Title dibuat lebih spesifik dengan kata kunci target
+  title: "Bank Sampah Digital Anambas | Kelola & Daur Ulang Sampah",
+  description: "Platform resmi Sistem Manajemen Bank Sampah Digital Kepulauan Anambas. Tukar dan kelola sampah daur ulang Anda secara digital dan efisien.",
   manifest: "/manifest.json",
-  keywords: ["bank sampah", "anambas", "daur ulang", "sampah digital"],
+  keywords: [
+    "bank sampah anambas", 
+    "anambas", 
+    "daur ulang anambas", 
+    "sampah digital anambas",
+    "kepulauan anambas",
+    "bank sampah digital"
+  ],
   authors: [{ name: "Bank Sampah Anambas" }],
+  
+  // Mengizinkan Google mengindeks halaman
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
+
+  // Verifikasi Google Search Console
+  verification: {
+    google: "google894fc779a7a40309",
+  },
+
+  // Menentukan URL resmi website
+  metadataBase: new URL('https://anambas.my.id'),
+  alternates: {
+    canonical: '/',
+  },
+
   icons: {
     icon: "/favicon-96x96.png",
     apple: "/apple-touch-icon.png",
   },
+
+  // Optimasi tampilan share di Media Sosial (WhatsApp, FB, Twitter/X)
   openGraph: {
     title: "Bank Sampah Digital Anambas",
     description: "Sistem Manajemen Bank Sampah Digital Kepulauan Anambas",
-    type: "website",
+    url: 'https://anambas.my.id',
+    siteName: 'Bank Sampah Digital Anambas',
+    locale: 'id_ID',
+    type: 'website',
   },
 }
 
@@ -39,12 +73,12 @@ export default function RootLayout({ children }) {
         <SyncInit />
         <OfflineBanner />
         
-        {/* Tambahkan pembungkus utama ini dengan padding top agar responsif di HP vertikal */}
         <main className="flex-1 w-full pt-12 md:pt-14 isolation-auto">
           {children}
         </main>
 
         <Toaster richColors position="top-right" closeButton expand={false} />
+        
         <script dangerouslySetInnerHTML={{
           __html: `
             if ('serviceWorker' in navigator) {
