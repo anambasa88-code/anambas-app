@@ -315,13 +315,7 @@ export default function ProsedurDetail() {
 
         {/* CTA */}
         <div className="mt-16 text-center">
-          <Link
-            href="/auth/login"
-            className="inline-flex items-center gap-2.5 px-8 sm:px-10 py-4 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-base sm:text-lg rounded-xl transition-colors duration-300 shadow-lg shadow-teal-900/10"
-          >
-            <span>Mulai Menabung Sekarang</span>
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+      
 
           <p className="mt-4 text-sm text-slate-500">
             Bergabunglah dengan ribuan nasabah yang sudah merasakan manfaatnya

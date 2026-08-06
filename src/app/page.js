@@ -51,7 +51,7 @@ export default function LandingPage() {
                 href="/auth/login"
                 className="px-6 py-2.5 rounded-full font-semibold text-white bg-[#1D293D] hover:bg-[#233049] transition-all"
               >
-                Login
+                Mulai Menabung Sekarang
               </Link>
             </div>
 
@@ -99,16 +99,16 @@ export default function LandingPage() {
                 href="/auth/login"
                 className="bg-white text-center text-slate-700 border border-slate-300 py-2 rounded-xl"
               >
-                Login
+                Mulai Menabung Sekarang
               </Link>
             </div>
           )}
         </div>
       </header>
       {/* ===== HERO SECTION ===== */}
-   <section
+      <section
         className="relative bg-cover bg-center h-[80vh]"
-        style={{ backgroundImage: `url('/anambas-bg4.jpg')` }}
+        style={{ backgroundImage: `url('/anambas-bg4.webp')` }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-slate-900/70 via-slate-900/50 to-slate-900/80"></div>
         <div className="relative max-w-7xl mx-auto px-4 h-full flex flex-col justify-center text-center text-white">
@@ -117,8 +117,7 @@ export default function LandingPage() {
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight drop-shadow-lg">
-            Dashboard Bank Sampah{" "}
-            <span className="text-teal-400">Anambas</span>
+            Dashboard Bank Sampah <span className="text-teal-400">Anambas</span>
           </h1>
           <p className="mt-4 text-lg sm:text-xl max-w-2xl mx-auto text-slate-200">
             Kelola, pantau, dan tingkatkan pengelolaan sampah secara digital
@@ -126,19 +125,20 @@ export default function LandingPage() {
           </p>
 
           {/* TOMBOL LOGIN & TENTANG YAYASAN */}
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          {/* Mengubah ke flex-col di semua ukuran layar dan memberi lebar sama (opsional: w-full sm:w-auto) */}
+          <div className="mt-10 flex flex-col items-center justify-center gap-4">
             <Link
               href="/auth/login"
-              className="inline-block px-10 py-4 text-base sm:text-lg font-semibold bg-teal-600 hover:bg-teal-500 text-white transition-colors duration-300 rounded-xl shadow-lg shadow-teal-900/40"
+              className="w-full sm:w-auto inline-block px-10 py-4 text-base sm:text-lg font-semibold bg-teal-600 hover:bg-teal-500 text-white transition-colors duration-300 rounded-xl shadow-lg shadow-teal-900/40"
             >
-              Login
+              Mulai Menabung Sekarang
             </Link>
 
             <a
               href="https://anambasfoundation.org/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-4 text-base sm:text-lg font-medium border border-white/30 text-white hover:bg-white/10 transition-colors duration-300 rounded-xl"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 text-base sm:text-lg font-medium border border-white/30 text-white hover:bg-white/10 transition-colors duration-300 rounded-xl"
             >
               Kenali Yayasan Kami
               <ExternalLink className="w-4 h-4" />
@@ -170,7 +170,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-        {/* ===== PREMIUM MARQUEE ===== */}
+      {/* ===== PREMIUM MARQUEE ===== */}
       <div className="w-full py-10 bg-slate-50">
         <Marquee speed={25} gradient={true}>
           <div className="flex items-center gap-32">
@@ -245,13 +245,13 @@ export default function LandingPage() {
       {/* ===== PROSEDUR DETAIL ===== */}
       <ProsedurDetail />
       {/* ===== KONTAK BANK SAMPAH ===== */}
-      <KontakBankSampah /> 
+      <KontakBankSampah />
       {/* ===== MANFAAT (Single Image) ===== */}
       <section id="manfaat" className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="relative w-full h-80 sm:h-96 rounded-2xl shadow-xl overflow-hidden">
             <Image
-              src="/anambas-bg1.jpg"
+              src="/anambas-bg1.webp"
               alt="Manfaat DWEP"
               fill
               className="object-cover"

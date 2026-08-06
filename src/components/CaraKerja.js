@@ -280,13 +280,7 @@ export default function CaraKerja() {
 
         {/* CTA */}
         <div className="mt-16 text-center">
-          <Link
-            href="/auth/login"
-            className="inline-flex items-center gap-2.5 px-8 sm:px-10 py-4 bg-teal-500 hover:bg-teal-400 text-white font-bold text-base sm:text-lg rounded-xl transition-all duration-300 shadow-xl shadow-teal-950/50"
-          >
-            <span>Mulai Menabung Sekarang</span>
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+          
 
           <p className="mt-4 text-sm font-medium text-white drop-shadow-md">
             Bergabunglah dengan ribuan nasabah yang sudah merasakan manfaatnya

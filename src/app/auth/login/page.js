@@ -178,7 +178,7 @@ export default function LoginPage() {
           {/* 1. Pilih Role */}
           <div>
             <label className="text-sm font-medium text-gray-700 mb-2 block">
-              Login Sebagai
+              Masuk Sebagai
             </label>
             <div className="grid grid-cols-3 gap-2">
               {ROLES.map(({ value, label, icon: Icon }) => (
