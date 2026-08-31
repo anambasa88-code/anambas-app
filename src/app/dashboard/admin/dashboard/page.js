@@ -103,13 +103,14 @@ export default function AdminDashboard() {
     }));
   };
 
+  // Format rupiah diubah untuk HANYA menampilkan angka eksak dengan pemisah ribuan
   const formatRupiah = (num) => {
     const value = Number(num) || 0;
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
+      minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-      notation: value > 9999999 ? "compact" : "standard",
     }).format(value);
   };
 
@@ -121,11 +122,11 @@ export default function AdminDashboard() {
         <div className="p-6 max-w-7xl mx-auto">
           <div className="animate-pulse space-y-6">
             <div className="h-8 w-64 rounded-lg bg-gray-200 dark:bg-slate-800" />
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(5)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-32 rounded-lg bg-gray-200 dark:bg-slate-800"
+                  className="h-48 rounded-2xl bg-gray-200 dark:bg-slate-800"
                 />
               ))}
             </div>
@@ -169,8 +170,12 @@ export default function AdminDashboard() {
           handleFilter={handleFilter}
         />
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+        {/* 
+          Stats Cards Grid - DIPERBAIKI: 
+          Menggunakan grid-cols-3 maksimal agar tiap card punya ruang sangat luas 
+          sehingga angka ratusan juta/miliar tidak akan menabrak border. 
+        */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           <DashboardStatsCard
             type="nasabah"
             data={data}
