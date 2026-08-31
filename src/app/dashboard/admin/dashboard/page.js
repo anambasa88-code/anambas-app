@@ -11,13 +11,8 @@ import ExportButtons from "@/components/admin/dashboard/ExportButtons";
 import GlobalSampahTable from "@/components/admin/dashboard/GlobalSampahTable";
 import {
   RefreshCw,
-  Building2,
   TrendingUp,
   FileSpreadsheet,
-  FileText,
-  ArrowLeft,
-  Search,
-  Categories,
 } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -79,7 +74,7 @@ export default function AdminDashboard() {
         `/api/users/admin/dashboard?${params.toString()}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        },
+        }
       );
 
       if (!res.ok) throw new Error("Gagal mengambil data");
@@ -113,7 +108,8 @@ export default function AdminDashboard() {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
-      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+      notation: value > 9999999 ? "compact" : "standard",
     }).format(value);
   };
 
@@ -205,8 +201,6 @@ export default function AdminDashboard() {
             data={data}
             formatRupiah={formatRupiah}
           />
-         
-          
         </div>
 
         {/* Global Sampah Table */}

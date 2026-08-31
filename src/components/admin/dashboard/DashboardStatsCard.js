@@ -1,5 +1,5 @@
 "use client";
-import { Users, UsersRound, Package, TrendingUp, DollarSign, Wallet, Waves, ArrowUpRight, ArrowDownRight, Recycle, Wrench, FileText, Layers, Percent } from "lucide-react";
+import { Users, UsersRound, Package, TrendingUp, DollarSign, Wallet, ArrowUpRight, ArrowDownRight, Recycle, Wrench, FileText, Layers, Percent } from "lucide-react";
 
 const CATEGORY_ICONS = {
   PLASTIK: Recycle,
@@ -15,6 +15,13 @@ export default function DashboardStatsCard({
   global, 
   formatRupiah
 }) {
+
+  const formatBerat = (kg) => {
+    const val = Number(kg) || 0;
+    if (val >= 1000) return `${(val / 1000).toFixed(2).replace('.', ',')} Ton`;
+    return `${new Intl.NumberFormat('id-ID').format(val)} kg`;
+  };
+
   const renderNasabahCard = () => (
     <div className="p-6 rounded-2xl border border-gray-200 shadow-sm bg-white dark:bg-slate-900 dark:border-slate-700 hover:shadow-md transition-shadow">
       <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center mb-4">
@@ -44,8 +51,6 @@ export default function DashboardStatsCard({
   const renderSampahCard = () => {
     const globalSampah = global.sampah_terkumpul || [];
     const totalBerat = globalSampah.reduce((sum, item) => sum + (Number(item.total_berat) || 0), 0);
-    
-    // Semua kategori yang harus ditampilkan
     const allCategories = ["PLASTIK", "LOGAM", "KERTAS", "LAINNYA", "CAMPURAN"];
     
     return (
@@ -54,7 +59,7 @@ export default function DashboardStatsCard({
           <Package className="w-6 h-6 text-green-600 dark:text-green-400" />
         </div>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Setoran</p>
-        <p className="text-2xl font-bold text-green-600 dark:text-green-400">{totalBerat.toFixed(2)} kg</p>
+        <p className="text-2xl font-bold text-green-600 dark:text-green-400 truncate">{formatBerat(totalBerat)}</p>
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-slate-700 space-y-2">
           {allCategories.map((name) => {
             const Icon = CATEGORY_ICONS[name] || Package;
@@ -66,7 +71,7 @@ export default function DashboardStatsCard({
                   {name.charAt(0) + name.slice(1).toLowerCase()}
                 </span>
                 <span className="font-semibold text-gray-800 dark:text-white">
-                  {berat.toFixed(1)} kg
+                  {formatBerat(berat)}
                 </span>
               </div>
             );
@@ -98,7 +103,7 @@ export default function DashboardStatsCard({
           </div>
           <div className="pl-4 space-y-1">
             <div className="flex justify-between text-xs">
-              <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+              <span className="flex items-center gap-1 text-gray-400 dark:text-gray-500">
                 <Wallet className="w-3 h-3" />
                 Tabung
               </span>
@@ -107,7 +112,7 @@ export default function DashboardStatsCard({
               </span>
             </div>
             <div className="flex justify-between text-xs">
-              <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+              <span className="flex items-center gap-1 text-gray-400 dark:text-gray-500">
                 <DollarSign className="w-3 h-3" />
                 Jual Langsung
               </span>
@@ -138,15 +143,15 @@ export default function DashboardStatsCard({
         <DollarSign className="w-6 h-6 text-violet-600 dark:text-violet-400" />
       </div>
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Perputaran Uang Seluruh</p>
-      <p className="text-3xl font-bold text-violet-600 dark:text-violet-400 mb-4">
+      <p className="text-2xl font-bold text-gray-800 dark:text-white mb-4 truncate">
         {formatRupiah(global.total_rp)}
       </p>
       <div className="space-y-2 mb-4">
-        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
+        <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">
           Breakdown Metode Bayar
         </p>
         <div className="flex justify-between items-center text-sm">
-          <span className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+          <span className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <Wallet className="w-4 h-4" />
             Tabung
           </span>
@@ -155,7 +160,7 @@ export default function DashboardStatsCard({
           </span>
         </div>
         <div className="flex justify-between items-center text-sm">
-          <span className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+          <span className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <DollarSign className="w-4 h-4" />
             Jual Langsung
           </span>
@@ -165,7 +170,7 @@ export default function DashboardStatsCard({
         </div>
       </div>
       <div className="pt-4 border-t border-gray-200 dark:border-slate-700 space-y-2">
-        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
+        <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">
           Saldo Tabungan Nasabah
         </p>
         <div className="space-y-1.5">
@@ -213,13 +218,12 @@ export default function DashboardStatsCard({
             <Wallet className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Saldo Aktif</p>
-          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 truncate">
             {formatRupiah(saldoAktif)}
           </p>
         </div>
 
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-slate-700 space-y-3">
-          {/* Rasio Mengendap */}
           <div className="flex justify-between items-center text-sm">
             <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400 text-xs">
               <Percent className="w-3 h-3" /> Rasio Saldo Tersimpan
@@ -229,7 +233,6 @@ export default function DashboardStatsCard({
             </span>
           </div>
 
-          {/* Progress Bar Mini */}
           <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
             <div 
               className="bg-emerald-500 h-1.5 rounded-full transition-all duration-500" 
@@ -237,7 +240,6 @@ export default function DashboardStatsCard({
             ></div>
           </div>
 
-          {/* Info Pendukung Mini */}
           <div className="pt-2 flex items-center justify-between border-t border-gray-100 dark:border-slate-800/60">
             <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Total Penarikan</span>
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/40 text-[11px] font-bold text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-900/30">
