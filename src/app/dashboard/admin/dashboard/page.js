@@ -9,11 +9,7 @@ import UnitTable from "@/components/admin/dashboard/UnitTable";
 import FilterControls from "@/components/admin/dashboard/FilterControls";
 import ExportButtons from "@/components/admin/dashboard/ExportButtons";
 import GlobalSampahTable from "@/components/admin/dashboard/GlobalSampahTable";
-import {
-  RefreshCw,
-  TrendingUp,
-  FileSpreadsheet,
-} from "lucide-react";
+import { RefreshCw, TrendingUp, FileSpreadsheet } from "lucide-react";
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
@@ -74,7 +70,7 @@ export default function AdminDashboard() {
         `/api/users/admin/dashboard?${params.toString()}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
 
       if (!res.ok) throw new Error("Gagal mengambil data");
@@ -139,7 +135,6 @@ export default function AdminDashboard() {
     <DashboardLayout>
       {/* Menggunakan max-w-[1600px] agar lebih lebar di layar besar */}
       <div className="p-4 md:p-6 max-w-[1600px] mx-auto space-y-6 md:space-y-8">
-        
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
@@ -172,7 +167,7 @@ export default function AdminDashboard() {
         />
 
         {/* 1 BARIS - 5 KOLOM (Sustain untuk layar desktop) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <DashboardStatsCard
             type="nasabah"
             data={data}
@@ -191,6 +186,7 @@ export default function AdminDashboard() {
             global={global}
             formatRupiah={formatRupiah}
           />
+          {/* Card Keuangan & Saldo ditaruh di baris kedua dengan lebar yang proporsional */}
           <DashboardStatsCard
             type="keuangan"
             data={data}
