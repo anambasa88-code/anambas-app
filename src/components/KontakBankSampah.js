@@ -13,98 +13,98 @@ export default function KontakBankSampah() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [selectedBankForModal, setSelectedBankForModal] = useState(null);
 
-  const banks = [
-    {
-      id: 1,
-      name: "PDU KUALA MARAS",
-      contact: "SYAIRUL",
-      phone: "+62 821-7212-8384",
-      address: "Kuala Maras",
-      type: "PDU",
-      status: "Aktif"
-    },
-    {
-      id: 2,
-      name: "PDU KIABU",
-      contact: "RAZALI",
-      phone: "+62 812-6733-1515",
-      address: "Kiabu",
-      type: "PDU",
-      status: "Aktif"
-    },
-    {
-      id: 3,
-      name: "BANK SAMPAH TELAGA",
-      contact: "HUSNI",
-      phone: "+62 812-6163-9231",
-      address: "Telaga",
-      type: "Bank Sampah",
-      status: "Aktif"
-    },
-    {
-      id: 4,
-      name: "BANK SAMPAH TELAGA KECIL",
-      contact: "AGUS",
-      phone: "+62 813-7803-5633",
-      address: "Telaga Kecil",
-      type: "Bank Sampah",
-      status: "Aktif"
-    },
-    {
-      id: 5,
-      name: "BANK SAMPAH CANDI",
-      contact: "GAYATRI / DINA",
-      phone: "+62 821-7107-1588 / +62 823-6425-7306",
-      address: "Candi",
-      type: "Bank Sampah",
-      status: "Aktif"
-    },
-    {
-      id: 6,
-      name: "BANK SAMPAH LANGIR",
-      contact: "GAYATRI / AISYAH",
-      phone: "+62 821-7107-1588 / +62 823-8993-9465",
-      address: "Langir",
-      type: "Bank Sampah",
-      status: "Aktif"
-    },
-    {
-      id: 7,
-      name: "BANK SAMPAH PIASAN",
-      contact: "IRWANTO / NURAINI",
-      phone: "+62 812-6718-3055 / +62 812-6718-3056",
-      address: "Piasan",
-      type: "Bank Sampah",
-      status: "Aktif"
-    },
-    {
-      id: 8,
-      name: "BANK SAMPAH LANDAK",
-      contact: "RIO",
-      phone: "+62 852-1182-5180",
-      address: "Landak",
-      type: "Bank Sampah",
-      status: "Aktif"
-    },
-    {
-      id: 9,
-      name: "BANK SAMPAH KELILING PULAU MATAK",
-      contact: "HENDRI",
-      phone: "+62 852-6511-8877",
-      address: "Pulau Matak",
-      type: "Bank Sampah Keliling",
-      status: "Aktif"
-    },
-    {
-      id: 10,
-      name: "BANK SAMPAH KELILING PULAU JEMAJA",
-      contact: "HABIBI",
-      phone: "+62 812-6842-9997",
-      address: "Pulau Jemaja",
-      type: "Bank Sampah Keliling",
-      status: "Aktif"
-    }
-  ];
+const banks = [
+  {
+    id: 1,
+    name: "PDU KUALA MARAS",
+    contact: "SYAIRUL",
+    phone: "+62 821-7212-8384",
+    address: "Kuala Maras",
+    type: "PDU",
+    status: "Aktif"
+  },
+  {
+    id: 2,
+    name: "PDU KIABU",
+    contact: "RAZALI",
+    phone: "+62 812-6733-1515",
+    address: "Kiabu",
+    type: "PDU",
+    status: "Aktif"
+  },
+  {
+    id: 3,
+    name: "BANK SAMPAH TELAGA",
+    contact: "HUSNI",
+    phone: "+62 812-6163-9231",
+    address: "Telaga",
+    type: "Bank Sampah",
+    status: "Aktif"
+  },
+  {
+    id: 4,
+    name: "BANK SAMPAH TELAGA KECIL",
+    contact: "AGUS",
+    phone: "+62 813-7803-5633",
+    address: "Telaga Kecil",
+    type: "Bank Sampah",
+    status: "Aktif"
+  },
+  {
+    id: 5,
+    name: "BANK SAMPAH CANDI",
+    contact: "GAYATRI / DINA",
+    phone: "+62 821-7107-1588 / +62 823-6425-7306",
+    address: "Candi",
+    type: "Bank Sampah",
+    status: "Aktif"
+  },
+  {
+    id: 6,
+    name: "BANK SAMPAH LANGIR",
+    contact: "GAYATRI / AISYAH",
+    phone: "+62 821-7107-1588 / +62 823-8993-9465",
+    address: "Langir",
+    type: "Bank Sampah",
+    status: "Aktif"
+  },
+  {
+    id: 7,
+    name: "BANK SAMPAH PIASAN",
+    contact: "IRWANTO",
+    phone: "+62 812-6718-3055",
+    address: "Piasan",
+    type: "Bank Sampah",
+    status: "Aktif"
+  },
+  {
+    id: 8,
+    name: "BANK SAMPAH LANDAK",
+    contact: "RIO",
+    phone: "+62 852-1182-5180",
+    address: "Landak",
+    type: "Bank Sampah",
+    status: "Aktif"
+  },
+  {
+    id: 9,
+    name: "BANK SAMPAH KELILING PULAU MATAK",
+    contact: "HENDRI",
+    phone: "+62 852-6511-8877",
+    address: "Pulau Matak",
+    type: "Bank Sampah Keliling",
+    status: "Aktif"
+  },
+  {
+    id: 10,
+    name: "BANK SAMPAH KELILING PULAU JEMAJA",
+    contact: "HABIBI",
+    phone: "+62 812-6842-9997",
+    address: "Pulau Jemaja",
+    type: "Bank Sampah Keliling",
+    status: "Aktif"
+  }
+];
 
   const filteredBanks = banks.filter(bank => {
     const matchesSearch = bank.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
