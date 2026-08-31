@@ -103,7 +103,6 @@ export default function AdminDashboard() {
     }));
   };
 
-  // Format rupiah diubah untuk HANYA menampilkan angka eksak dengan pemisah ribuan
   const formatRupiah = (num) => {
     const value = Number(num) || 0;
     return new Intl.NumberFormat("id-ID", {
@@ -119,10 +118,10 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="p-6 max-w-7xl mx-auto">
+        <div className="p-4 md:p-6 max-w-[1600px] mx-auto">
           <div className="animate-pulse space-y-6">
             <div className="h-8 w-64 rounded-lg bg-gray-200 dark:bg-slate-800" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
               {[...Array(5)].map((_, i) => (
                 <div
                   key={i}
@@ -138,10 +137,12 @@ export default function AdminDashboard() {
 
   return (
     <DashboardLayout>
-      <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6 md:space-y-8">
+      {/* Menggunakan max-w-[1600px] agar lebih lebar di layar besar */}
+      <div className="p-4 md:p-6 max-w-[1600px] mx-auto space-y-6 md:space-y-8">
+        
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-2">
+          <div className="space-y-1">
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
               <TrendingUp className="w-6 h-6 text-blue-600" />
               Dashboard Admin
@@ -170,12 +171,8 @@ export default function AdminDashboard() {
           handleFilter={handleFilter}
         />
 
-        {/* 
-          Stats Cards Grid - DIPERBAIKI: 
-          Menggunakan grid-cols-3 maksimal agar tiap card punya ruang sangat luas 
-          sehingga angka ratusan juta/miliar tidak akan menabrak border. 
-        */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {/* 1 BARIS - 5 KOLOM (Sustain untuk layar desktop) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           <DashboardStatsCard
             type="nasabah"
             data={data}
@@ -212,7 +209,7 @@ export default function AdminDashboard() {
         <div className="space-y-4 mt-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-2 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-1 flex items-center gap-2">
                 <FileSpreadsheet className="w-5 h-5 text-green-600 dark:text-green-400" />
                 Data Sampah Global ({filteredGlobalSampah.length} Jenis)
               </h2>
