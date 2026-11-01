@@ -29,17 +29,32 @@ export default function TransaksiPage() {
   const [unitName, setUnitName] = useState("BANK SAMPAH");
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [transactionToCancel, setTransactionToCancel] = useState(null);
+  const [showFilter, setShowFilter] = useState(false);
+
+  // State untuk menampung input sementara di panel
   const [filters, setFilters] = useState({
     tipe: "ALL",
     startDate: "",
     endDate: "",
     nasabahId: "",
+    kategori: "ALL",
+    status: "ALL",
   });
-  const [showFilter, setShowFilter] = useState(false);
 
+  // State untuk menampung filter yang sudah "Diterapkan" (nembak API)
+  const [appliedFilters, setAppliedFilters] = useState({
+    tipe: "ALL",
+    startDate: "",
+    endDate: "",
+    nasabahId: "",
+    kategori: "ALL",
+    status: "ALL",
+  });
+
+  // Fetch hanya jalan saat halaman berubah atau filter diterapkan
   useEffect(() => {
     fetchTransaksi();
-  }, [page, filters]);
+  }, [page, appliedFilters]);
 
   const fetchTransaksi = async () => {
     setLoading(true);
@@ -48,10 +63,12 @@ export default function TransaksiPage() {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: "20",
-        tipe: filters.tipe,
-        ...(filters.startDate && { startDate: filters.startDate }),
-        ...(filters.endDate && { endDate: filters.endDate }),
-        ...(filters.nasabahId && { nasabahId: filters.nasabahId }),
+        tipe: appliedFilters.tipe,
+        ...(appliedFilters.startDate && { startDate: appliedFilters.startDate }),
+        ...(appliedFilters.endDate && { endDate: appliedFilters.endDate }),
+        ...(appliedFilters.nasabahId && { nasabahId: appliedFilters.nasabahId }),
+        ...(appliedFilters.kategori !== "ALL" && { kategori: appliedFilters.kategori }),
+        ...(appliedFilters.status !== "ALL" && { status: appliedFilters.status }),
       });
 
       const res = await fetch(`/api/transaksi/daftar?${params}`, {
@@ -85,7 +102,7 @@ export default function TransaksiPage() {
 
       const payload =
         item.jenis === "SETOR"
-          ? { id_setor: item.group_id || item.id_setor, alasan_batal: alasan } // Pastikan mengirim key 'id_setor' ke backend
+          ? { id_setor: item.group_id || item.id_setor, alasan_batal: alasan }
           : { id_tarik: item.id_tarik, alasan_batal: alasan };
 
       const res = await fetch(endpoint, {
@@ -102,13 +119,17 @@ export default function TransaksiPage() {
         throw new Error(result.error || "Gagal membatalkan transaksi");
 
       toast.success("Transaksi berhasil dibatalkan!");
-      setIsCancelModalOpen(false); // Tutup modal jika sukses
+      setIsCancelModalOpen(false);
       setTransactionToCancel(null);
-      fetchTransaksi(); // Refresh isi tabel
-    }  catch (error) {
-      // Menyaring error Prisma agar lebih mudah dipahami oleh petugas
-      if (error.message.includes("prisma") || error.message.includes("invocation")) {
-        toast.error("Gagal memproses ke database. Format ID Transaksi tidak sesuai.");
+      fetchTransaksi();
+    } catch (error) {
+      if (
+        error.message.includes("prisma") ||
+        error.message.includes("invocation")
+      ) {
+        toast.error(
+          "Gagal memproses ke database. Format ID Transaksi tidak sesuai.",
+        );
       } else {
         toast.error(error.message || "Terjadi kesalahan pada server.");
       }
@@ -117,13 +138,28 @@ export default function TransaksiPage() {
     }
   };
 
+  // Hanya ubah state `filters` (belum nembak API)
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
-    setPage(1);
+  };
+
+  // Fungsi tombol "Terapkan Filter"
+  const handleApplyFilter = () => {
+    setAppliedFilters(filters); // Pindahkan ke state aktif
+    setPage(1); // Reset ke halaman 1
   };
 
   const resetFilters = () => {
-    setFilters({ tipe: "ALL", startDate: "", endDate: "" });
+    const empty = {
+      tipe: "ALL",
+      startDate: "",
+      endDate: "",
+      nasabahId: "",
+      kategori: "ALL",
+      status: "ALL",
+    };
+    setFilters(empty);
+    setAppliedFilters(empty);
     setPage(1);
   };
 
@@ -163,48 +199,47 @@ export default function TransaksiPage() {
       <ExportRiwayatTransaksi
         ref={exportRef}
         data={finalDisplayData}
-        filters={filters}
+        filters={appliedFilters} // Export ngikutin filter yang diterapkan
         unitName={unitName}
       />
 
-      <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
-        {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto space-y-4 sm:space-y-6">
+        <div className="flex flex-col gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
-              <Package className="w-8 h-8 text-green-600 dark:text-green-400" />
-              Riwayat Transaksi
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2 sm:gap-3">
+              <Package className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 dark:text-green-400 flex-shrink-0" />
+              <span>Riwayat Transaksi</span>
             </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
               Semua transaksi di unit Anda
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setShowFilter(!showFilter)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+              className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all ${
                 showFilter
                   ? "bg-green-600 text-white"
                   : "bg-green-50 text-green-600 border border-green-200"
               }`}
             >
               <Filter className="w-4 h-4" />
-              <span className="font-medium">Filter</span>
+              <span className="font-medium text-sm">Filter</span>
             </button>
             <button
               onClick={() => exportRef.current.generateExcel()}
               className="flex items-center gap-2 px-3 py-2 bg-emerald-100 text-emerald-700 rounded-lg text-sm font-bold border border-emerald-200"
             >
               <FileSpreadsheet className="w-4 h-4" />
-              <span className="hidden md:inline">Excel</span>
+              <span className="hidden sm:inline">Excel</span>
             </button>
             <button
               onClick={() => exportRef.current.generatePDF()}
               className="flex items-center gap-2 px-3 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-bold border border-red-200"
             >
               <FileText className="w-4 h-4" />
-              <span className="hidden md:inline">PDF</span>
+              <span className="hidden sm:inline">PDF</span>
             </button>
             <button
               onClick={() => fetchTransaksi()}
@@ -224,11 +259,14 @@ export default function TransaksiPage() {
             filters={filters}
             onFilterChange={handleFilterChange}
             onReset={resetFilters}
+            onApply={() => {
+              handleApplyFilter();
+              setShowFilter(false); // Opsional: Tutup panel setelah diterapkan
+            }}
             onClose={() => setShowFilter(false)}
           />
         )}
 
-        {/* Table Section */}
         {/* Table Section */}
         <TransaksiTable
           data={finalDisplayData}
@@ -240,7 +278,7 @@ export default function TransaksiPage() {
             setSelectedGroup(t);
             setIsModalOpen(true);
           }}
-          onCancelTransaksi={handleCancelTransaksi} // <-- Pastikan baris ini ada
+          onCancelTransaksi={handleCancelTransaksi}
           formatRupiah={formatRupiah}
           formatDate={formatDate}
         />

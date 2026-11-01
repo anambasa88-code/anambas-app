@@ -114,7 +114,7 @@ export default function SampahTable({ data, activeTab, setActiveTab }) {
                   const persen  = ((Number(item.total_berat) / totalBerat) * 100).toFixed(1);
                   const barWidth = ((Number(item.total_berat) / maxBerat) * 100).toFixed(1);
                   return (
-                    <tr key={item.barang_id}
+                    <tr key={`${item.barang_id ?? item.nama_sampah}-${idx}`}
                       className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
                       <td className="px-5 py-3.5 text-center text-[11px] text-slate-400">{idx + 1}</td>
                       <td className="px-5 py-3.5">

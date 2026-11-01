@@ -90,7 +90,7 @@ export default function PetugasDashboard() {
     try {
       setLoading(true);
 
-      // JIKA OFFLINE: Ambil dari localStorage agar data tidak bernilai 0 [cite: 3, 4]
+
       if (typeof window !== "undefined" && !navigator.onLine) {
         const cachedDashboard = localStorage.getItem("cache_dashboard_petugas");
         if (cachedDashboard) {
@@ -136,7 +136,7 @@ export default function PetugasDashboard() {
         );
       }
 
-      // SIMPAN DATA HARGA SAMPAH KE INDEXEDDB DENGAN MAPPING KEY PATH YANG SESUAI [cite: 4, 5, 18]
+     
       if (
         sampahList.length > 0 &&
         !startDate &&

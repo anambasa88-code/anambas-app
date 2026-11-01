@@ -74,20 +74,20 @@ async function fetchSampahTerkumpul({ unitId, startDate, endDate } = {}, default
   const whereClause = "WHERE " + conditions.join(" AND ");
 
   const sql = `
-    SELECT 
-      ds.barang_id,
-      ds.nama_barang_snapshot AS nama_sampah,
-      ms.kategori_utama,
-      SUM(ds.berat) AS total_berat,
-      COUNT(ds.id)::int AS total_transaksi
-    FROM detail_setor ds
-    JOIN transaksi_setor ts ON ds.setor_id = ts.id_setor
-    JOIN users u ON ts.nasabah_id = u.id_user
-    JOIN master_sampah ms ON ds.barang_id = ms.id_barang
-    ${whereClause}
-    GROUP BY ds.barang_id, ds.nama_barang_snapshot, ms.kategori_utama
-    ORDER BY total_berat DESC
-  `;
+  SELECT 
+    ds.barang_id,
+    MAX(ms.nama_barang) AS nama_sampah,
+    ms.kategori_utama,
+    SUM(ds.berat) AS total_berat,
+    COUNT(ds.id)::int AS total_transaksi
+  FROM detail_setor ds
+  JOIN transaksi_setor ts ON ds.setor_id = ts.id_setor
+  JOIN users u ON ts.nasabah_id = u.id_user
+  JOIN master_sampah ms ON ds.barang_id = ms.id_barang
+  ${whereClause}
+  GROUP BY ds.barang_id, ms.kategori_utama
+  ORDER BY total_berat DESC
+`;
 
   const rows = await prisma.$queryRawUnsafe(sql, ...params);
 

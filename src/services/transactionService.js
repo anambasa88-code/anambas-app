@@ -25,6 +25,28 @@ export const transactionService = {
     if (!items || items.length === 0)
       throw new Error("Tidak ada item sampah untuk disetor");
 
+    // --- TAMBAHAN: CEK ANTI-DOUBLE SUBMIT ---
+    const fiveSecondsAgo = new Date(Date.now() - 5000);
+    const recentTransaksi = await prisma.transaksiSetor.findFirst({
+      where: {
+        nasabah_id: nasabah_id,
+        petugas_id: actorId,
+        waktu: { gte: fiveSecondsAgo },
+      },
+      include: { detail_items: true },
+    });
+
+    // Jika ada transaksi persis 5 detik lalu dengan total item yang sama, tolak.
+    if (
+      recentTransaksi &&
+      recentTransaksi.detail_items.length === items.length
+    ) {
+      throw new Error(
+        "Transaksi sedang diproses atau terdeteksi klik ganda. Mohon tunggu beberapa saat.",
+      );
+    }
+    // -----------------------------------------
+
     const groupId = `GRP-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
 
     return await prisma.$transaction(
@@ -175,6 +197,8 @@ export const transactionService = {
       startDate,
       endDate,
       nasabahId,
+      kategori = "ALL", // Tangkap filter baru
+      status = "ALL", // Tangkap filter baru
     } = options;
 
     const skip = (page - 1) * limit;
@@ -197,9 +221,30 @@ export const transactionService = {
     if (startDate || endDate) {
       const dateFilter = {};
       if (startDate) dateFilter.gte = new Date(startDate);
-      if (endDate) dateFilter.lte = new Date(endDate);
+      if (endDate) dateFilter.lte = new Date(endDate + "T23:59:59"); // Set akhir hari
       whereSetor.waktu = dateFilter;
       whereTarik.waktu = dateFilter;
+    }
+
+    // --- TAMBAHAN FILTER STATUS ---
+    if (status === "SUKSES") {
+      whereSetor.is_cancelled = false;
+      whereTarik.status = "SUKSES";
+    } else if (status === "BATAL") {
+      whereSetor.is_cancelled = true;
+      whereTarik.status = "DIBATALKAN";
+    }
+
+    // --- TAMBAHAN FILTER KATEGORI (Khusus Setor) ---
+    // Filter kategori dilakukan di relasi detail_items -> barang -> kategori_utama
+    if (kategori !== "ALL" && (tipe === "SETOR" || tipe === "ALL")) {
+      whereSetor.detail_items = {
+        some: {
+          barang: {
+            kategori_utama: kategori,
+          },
+        },
+      };
     }
 
     let setor = [],
@@ -212,7 +257,15 @@ export const transactionService = {
         prisma.transaksiSetor.findMany({
           where: whereSetor,
           include: {
-            detail_items: true,
+            // UBAH BAGIAN INI:
+            detail_items: {
+              include: {
+                barang: {
+                  select: { kategori_utama: true },
+                },
+              },
+            },
+            // SAMPAI SINI
             nasabah: { select: { nama_lengkap: true, nickname: true } },
             petugas: { select: { nama_lengkap: true } },
           },
@@ -372,6 +425,4 @@ export const transactionService = {
       { timeout: 15000 },
     );
   },
-
- 
 };

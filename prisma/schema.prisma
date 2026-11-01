@@ -207,13 +207,14 @@
     NASABAH
   }
 
-  enum KategoriUtama {
-    PLASTIK
-    LOGAM
-    KERTAS
-    LAINNYA
-    CAMPURAN
-  }
+ enum KategoriUtama {
+  PLASTIK
+  LOGAM
+  KERTAS
+  LAINNYA
+  CAMPURAN
+  PRESS
+}
 
   enum TipeSetoran {
     OCEAN_DEBRIS
