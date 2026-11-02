@@ -14,6 +14,7 @@ import {
   FileText,
   Package,
   Layers,
+  SquareStack,
 } from "lucide-react";
 
 const CATEGORIES = [
@@ -23,7 +24,8 @@ const CATEGORIES = [
   { value: "LOGAM", label: "Logam", icon: Wrench },
   { value: "LAINNYA", label: "Lainnya", icon: Layers },
   { value: "CAMPURAN", label: "Campuran", icon: Package },
-  // ← tambah ini
+  { value: "PRESS", label: "Press", icon: SquareStack },
+ 
 ];
 
 const CATEGORY_COLORS = {
@@ -32,7 +34,8 @@ const CATEGORY_COLORS = {
   LOGAM: "bg-slate-100 text-slate-600",
   LAINNYA: "bg-orange-50 text-orange-600",
   CAMPURAN: "bg-purple-50 text-purple-600",
-  // ← tambah ini
+  PRESS: "bg-rose-50 text-rose-600",
+ 
 };
 
 export default function HargaLokalPage() {

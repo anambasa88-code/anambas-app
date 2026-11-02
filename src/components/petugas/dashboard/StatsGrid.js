@@ -14,7 +14,7 @@ import {
   FileText,
   Layers,
   Percent,
-  ArrowRight,
+  SquareStack,
 } from "lucide-react";
 
 export default function StatsGrid({ data, formatRupiah }) {
@@ -93,6 +93,7 @@ export default function StatsGrid({ data, formatRupiah }) {
             { name: "KERTAS", Icon: FileText },
             { name: "LAINNYA", Icon: Layers },
             { name: "CAMPURAN", Icon: Package },
+            { name: "PRESS", Icon: SquareStack },
           ].map(({ name, Icon }) => (
             <div
               key={name}

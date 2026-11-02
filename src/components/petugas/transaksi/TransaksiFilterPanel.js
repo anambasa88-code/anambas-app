@@ -14,6 +14,7 @@ const KATEGORI_OPTIONS = [
   { value: "KERTAS", label: "Kertas" },
   { value: "LAINNYA", label: "Lainnya" },
   { value: "CAMPURAN", label: "Campuran" },
+  { value: "PRESS", label: "Press" },
 ];
 
 const STATUS_OPTIONS = [

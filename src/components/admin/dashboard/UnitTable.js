@@ -1,17 +1,5 @@
 "use client";
-import {
-  Building2,
-  ChevronDown,
-  ChevronUp,
-  Trash2,
-  Package,
-  Waves,
-  DollarSign,
-  RefreshCw,
-  Wallet,
-  TrendingUp,
-  Users,
-} from "lucide-react";
+import { Building2, ChevronDown, ChevronUp, Trash2, Package, Waves, DollarSign, RefreshCw, Wallet, TrendingUp, Users, SquareStack, } from "lucide-react";
 
 export default function UnitTable({
   per_unit,
@@ -25,6 +13,7 @@ export default function UnitTable({
     { name: "KERTAS", icon: Trash2 },
     { name: "LAINNYA", icon: DollarSign },
     { name: "CAMPURAN", icon: RefreshCw },
+    { name: "PRESS", icon: SquareStack}
   ];
 
   if (per_unit.length === 0) {

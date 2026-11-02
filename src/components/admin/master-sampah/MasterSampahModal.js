@@ -9,7 +9,8 @@ const CATEGORIES = [
   { value: "LOGAM", label: "Logam" },
   { value: "KERTAS", label: "Kertas" },
   { value: "LAINNYA", label: "Lainnya" },
-  { value: "CAMPURAN", label: "Campuran" }
+  { value: "CAMPURAN", label: "Campuran" },
+  { value: "PRESS", label: "Press" },
 ];
 
 export default function MasterSampahModal({ isOpen, onClose, editData, defaultKategori = "PLASTIK" }) {

@@ -8,6 +8,7 @@ const getKategoriColor = (kategori) => {
     case "KERTAS": return "bg-amber-50 text-amber-600 ring-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:ring-amber-800";
     case "LOGAM": return "bg-slate-100 text-slate-600 ring-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700";
     case "CAMPURAN": return "bg-purple-50 text-purple-600 ring-purple-100 dark:bg-purple-900/20 dark:text-purple-400 dark:ring-purple-800";
+    case "PRESS": return "bg-rose-50 text-rose-600 ring-rose-100 dark:bg-rose-900/20 dark:text-rose-400 dark:ring-rose-800";
     default: return "bg-slate-50 text-slate-500 ring-slate-100 dark:bg-slate-800 dark:text-slate-400 dark:ring-slate-700";
   }
 };

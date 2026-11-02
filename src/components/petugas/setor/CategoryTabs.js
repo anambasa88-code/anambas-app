@@ -1,15 +1,16 @@
 "use client";
-import { LayoutGrid, Recycle, FileText, Wrench, Package, Layers } from "lucide-react";
+import { LayoutGrid, Recycle, FileText, Wrench, Package, Layers, SquareStack } from "lucide-react";
 
-const CATEGORIES = ["SEMUA", "PLASTIK", "KERTAS", "LOGAM", "LAINNYA", "CAMPURAN"];
+const CATEGORIES = ["SEMUA", "PLASTIK", "KERTAS", "LOGAM", "LAINNYA", "CAMPURAN", "PRESS"];
 
 const CATEGORY_ICON = {
   SEMUA:    LayoutGrid,
   PLASTIK:  Recycle,
   KERTAS:   FileText,
   LOGAM:    Wrench,
-  LAINNYA:  Layers,   // ← tambah ini
+  LAINNYA:  Layers,
   CAMPURAN: Package,
+  PRESS:    SquareStack,
 };
 
 export default function CategoryTabs({ activeCategory, onCategoryChange }) {

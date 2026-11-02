@@ -148,6 +148,7 @@ export default function RiwayatNasabah() {
                   "KERTAS",
                   "LAINNYA",
                   "CAMPURAN",
+                  "PRESS",
                 ];
                 const kategoriLabels = {
                   PLASTIK: "Plastik",
@@ -155,6 +156,7 @@ export default function RiwayatNasabah() {
                   KERTAS: "Kertas",
                   LAINNYA: "Lainnya",
                   CAMPURAN: "Campuran",
+                  PRESS: "Press"
                 };
                 return kategoriList.map((kat) => {
                   const berat = summary.beratPerKategori?.[kat] || 0;

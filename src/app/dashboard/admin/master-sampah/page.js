@@ -6,7 +6,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import MasterSampahModal from "@/components/admin/master-sampah/MasterSampahModal";
 import {
   Package, Plus, Search, ChevronLeft, ChevronRight,
-  Pencil, LayoutGrid, Recycle, FileText, Wrench, Layers, Inbox
+  Pencil, LayoutGrid, Recycle, FileText, Wrench, Layers, Inbox,SquareStack,
 } from "lucide-react";
 
 const CATEGORIES = [
@@ -16,6 +16,7 @@ const CATEGORIES = [
   { value: "KERTAS", label: "Kertas", icon: FileText, color: "amber" },
   { value: "LAINNYA", label: "Lainnya", icon: Layers, color: "orange" },
   { value: "CAMPURAN", label: "Campuran", icon: Package, color: "purple" },
+  { value: "PRESS", label: "Press", icon: SquareStack, color: "rose" },
 ];
 
 const CATEGORY_STYLE = {
@@ -24,6 +25,7 @@ const CATEGORY_STYLE = {
   KERTAS: { badge: "bg-amber-50 text-amber-600 ring-amber-100", dot: "bg-amber-400" },
   LAINNYA: { badge: "bg-orange-50 text-orange-500 ring-orange-100", dot: "bg-orange-400" },
   CAMPURAN: { badge: "bg-purple-50 text-purple-600 ring-purple-100", dot: "bg-purple-400" },
+  PRESS: { badge: "bg-rose-50 text-rose-600 ring-rose-100", dot: "bg-rose-400" },
 };
 
 const TAB_ACTIVE_STYLE = {
@@ -33,6 +35,7 @@ const TAB_ACTIVE_STYLE = {
   amber: "bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:ring-amber-800",
   orange: "bg-orange-50 text-orange-700 ring-1 ring-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:ring-orange-800",
   purple: "bg-purple-50 text-purple-700 ring-1 ring-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:ring-purple-800",
+  rose: "bg-rose-50 text-rose-700 ring-1 ring-rose-200 dark:bg-rose-900/20 dark:text-rose-400 dark:ring-rose-800",
 };
 
 const itemsPerPage = 20;

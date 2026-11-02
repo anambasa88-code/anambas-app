@@ -1,5 +1,5 @@
 "use client";
-import { LayoutGrid, Recycle, FileText, Wrench, Package, Layers, Weight, ArrowUpDown, Inbox } from "lucide-react";
+import { LayoutGrid, Recycle, FileText, Wrench, Package, Layers, Weight, ArrowUpDown, Inbox, SquareStack } from "lucide-react";
 
 const CATEGORIES = [
   { value: "SEMUA",    label: "Semua",    icon: LayoutGrid, color: "emerald" },
@@ -8,6 +8,7 @@ const CATEGORIES = [
   { value: "KERTAS",   label: "Kertas",   icon: FileText,   color: "amber"   },
   { value: "LAINNYA",  label: "Lainnya",  icon: Layers,     color: "orange"  },
   { value: "CAMPURAN", label: "Campuran", icon: Package,    color: "purple"  },
+  { value: "PRESS", label: "Press", icon: SquareStack, color: "rose" }
 ];
 
 const CATEGORY_STYLE = {
@@ -16,6 +17,7 @@ const CATEGORY_STYLE = {
   KERTAS:   { badge: "bg-amber-50 text-amber-600 ring-amber-100", icon: FileText },
   LAINNYA:  { badge: "bg-orange-50 text-orange-500 ring-orange-100", icon: Layers },
   CAMPURAN: { badge: "bg-purple-50 text-purple-600 ring-purple-100", icon: Package },
+  PRESS: { badge: "bg-rose-50 text-rose-600 ring-rose-100", icon: SquareStack }
 };
 
 export default function SampahTable({ data, activeTab, setActiveTab }) {

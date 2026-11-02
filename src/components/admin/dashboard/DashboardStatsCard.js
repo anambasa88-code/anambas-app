@@ -1,5 +1,5 @@
 "use client";
-import { Users, UsersRound, Package, TrendingUp, DollarSign, Wallet, ArrowUpRight, ArrowDownRight, Recycle, Wrench, FileText, Layers, Percent } from "lucide-react";
+import { Users,SquareStack , UsersRound, Package, TrendingUp, DollarSign, Wallet, ArrowUpRight, ArrowDownRight, Recycle, Wrench, FileText, Layers, Percent } from "lucide-react";
 
 const CATEGORY_ICONS = {
   PLASTIK: Recycle,
@@ -7,6 +7,7 @@ const CATEGORY_ICONS = {
   KERTAS: FileText,
   LAINNYA: Layers,
   CAMPURAN: Package,
+  PRESS: SquareStack ,
 };
 
 export default function DashboardStatsCard({ 
@@ -55,7 +56,7 @@ export default function DashboardStatsCard({
   const renderSampahCard = () => {
     const globalSampah = global.sampah_terkumpul || [];
     const totalBerat = globalSampah.reduce((sum, item) => sum + (Number(item.total_berat) || 0), 0);
-    const allCategories = ["PLASTIK", "LOGAM", "KERTAS", "LAINNYA", "CAMPURAN"];
+    const allCategories = ["PLASTIK", "LOGAM", "KERTAS", "LAINNYA", "CAMPURAN", "PRESS"];
     
     return (
       <div className="p-4 md:p-5 rounded-2xl border border-gray-200 shadow-sm bg-white dark:bg-slate-900 dark:border-slate-700 hover:shadow-md transition-shadow">

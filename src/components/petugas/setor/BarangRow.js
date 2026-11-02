@@ -6,6 +6,7 @@ const CATEGORY_COLORS = {
   KERTAS:   { dot: "bg-amber-500",   text: "text-amber-500"   },
   LOGAM:    { dot: "bg-slate-500",   text: "text-slate-500"   },
   CAMPURAN: { dot: "bg-purple-500",  text: "text-purple-500"  },
+  PRESS:    { dot: "bg-rose-500",    text: "text-rose-500"    },
 };
 
 const formatRp = (num) =>

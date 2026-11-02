@@ -7,7 +7,28 @@ import ExportDetailNasabah from "@/components/petugas/nasabah/ExportDetailNasaba
 import DashboardLayout from "@/components/DashboardLayout";
 import DetailTransaksiModal from "@/components/petugas/transaksi/DetailTransaksiModal";
 import EditNasabahModal from "@/components/petugas/nasabah/EditNasabahModal";
-import { DollarSign, RefreshCw, ChevronLeft, ChevronRight, Wallet, User, MapPin, FileSpreadsheet, FileText, ArrowLeft, TrendingUp, TrendingDown, Inbox, Loader2, Plus, MinusCircle, AlertTriangle, XCircle, LockKeyhole, Ban, } from "lucide-react";
+import {
+  DollarSign,
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+  Wallet,
+  User,
+  MapPin,
+  FileSpreadsheet,
+  FileText,
+  ArrowLeft,
+  TrendingUp,
+  TrendingDown,
+  Inbox,
+  Loader2,
+  Plus,
+  MinusCircle,
+  AlertTriangle,
+  XCircle,
+  LockKeyhole,
+  Ban,
+} from "lucide-react";
 import CancelTransaksiModal from "@/components/petugas/transaksi/CancelTransaksiModal";
 import EditSaldoModal from "@/components/petugas/transaksi/EditSaldoModal";
 
@@ -356,6 +377,7 @@ export default function DetailNasabahPage() {
                           "KERTAS",
                           "LAINNYA",
                           "CAMPURAN",
+                          "PRESS",
                         ];
                         const kategoriLabels = {
                           PLASTIK: "Plastik",
@@ -363,6 +385,7 @@ export default function DetailNasabahPage() {
                           KERTAS: "Kertas",
                           LAINNYA: "Lainnya",
                           CAMPURAN: "Campuran",
+                          PRESS: "Press",
                         };
                         return kategoriList.map((kat) => {
                           const berat = summary.beratPerKategori?.[kat] || 0;
